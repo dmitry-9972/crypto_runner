@@ -1,0 +1,7 @@
+# Папки (игнорируем полностью)
+__pycache__/
+venv/
+env/
+.idea/
+
+cache_markets_*
