@@ -110,11 +110,11 @@ def get_prepared_dict_for_all_exchanges(comparer, symbol, exchanges_list ):
 
 
 def get_spread_alerts_and_funding_alerts(line_dict):
-
     spread_alerts = {
         k: v
         for k, v in sorted(
-            (item for item in line_dict.items() if item[1].get('spread', 0) > consts.SPREAD_FILTER),
+            (item for item in line_dict.items() if item[1].get('spread', 0) > consts.SPREAD_FILTER and
+             not item[1].get('spot_futures_comparison')),
             key=lambda item: item[1].get('spread', 0),
             reverse=True
         )
@@ -123,10 +123,31 @@ def get_spread_alerts_and_funding_alerts(line_dict):
     funding_alerts = {
         k: v
         for k, v in sorted(
-            (item for item in line_dict.items() if item[1].get('funding_gain', 0) > consts.FUNDING_FILTER),
+            (item for item in line_dict.items() if item[1].get('funding_gain', 0) > consts.FUNDING_FILTER and
+             not item[1].get('spot_futures_comparison')),
             key=lambda item: item[1].get('funding_gain', 0),
             reverse=True
         )
     }
 
-    return spread_alerts, funding_alerts
+    spot_to_futures_spread_alerts = {
+        k: v
+        for k, v in sorted(
+            (item for item in line_dict.items() if item[1].get('spread', 0) > consts.SPOT_TO_FUTURES_SPREAD_FILTER and
+             item[1].get('spot_futures_comparison')),
+            key=lambda item: item[1].get('spread', 0),
+            reverse=True
+        )
+    }
+
+    spot_to_futures_funding_alerts = {
+        k: v
+        for k, v in sorted(
+            (item for item in line_dict.items() if item[1].get('funding_gain', 0) > consts.SPOT_TO_FUTURES_FUNDING_FILTER and
+             item[1].get('spot_futures_comparison')),
+            key=lambda item: item[1].get('funding_gain', 0),
+            reverse=True
+        )
+    }
+
+    return spread_alerts, funding_alerts, spot_to_futures_spread_alerts, spot_to_futures_funding_alerts

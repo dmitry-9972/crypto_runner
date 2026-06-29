@@ -12,12 +12,7 @@ ctk.set_default_color_theme("blue")  # "blue", "green", "dark-blue"
 
 class Interface(ctk.CTk):
     colors = [
-        # "#FF6B6B",  # красноватый
-        # "#4ECDC4",  # бирюзовый
         "#45B7D1",  # голубой
-        # "#96CEB4",  # мятный
-        # "#D4A5A5",  # розоватый
-        # "#9B59B6"  # фиолетовый
     ]
 
     exchange_labels = []
@@ -430,55 +425,27 @@ class Interface(ctk.CTk):
 
 
     def open_alert_window(self, ):
-        """Метод для создания и позиционирования нового окна рядом"""
-
-
-        # Создаем новое окно
         self.child_alert_window = ctk.CTkToplevel(self)
-        # self.child_alert_window  = ctk.CTk()
         self.child_alert_window.title(f"ALERTS")
         self.child_alert_window.geometry("600x650")
-
-        # Поверх основного окна
         self.child_alert_window.attributes("-topmost", False)
-
-        # Вычисляем координаты, чтобы открыть окно СПРАВА от главного
         main_x = self.winfo_x()
         main_y = self.winfo_y()
         main_width = self.winfo_width()
-
-        # Смещаем новое окно вправо на ширину главного + 10 пикселей отступа
         new_x = main_x + main_width + 10
         new_y = main_y
-
         self.child_alert_window.geometry(f"+{new_x}+{new_y}")
-
         self.alert_scrollable_frame = ctk.CTkScrollableFrame(
             self.child_alert_window,
             fg_color="transparent"
         )
         self.alert_scrollable_frame.pack(fill="both", expand=True, padx=20, pady=10)
-
-
-        spread_alerts, funding_alerts = get_spread_alerts_and_funding_alerts(self.line_dict)
-
-        # spread_alerts = list(spread_alerts.keys())
-        # funding_alerts = list(funding_alerts.keys())
-
-        ##### ФИЛЬТРОВАТЬ ПО СПРЕДУ И ФАНДНИГУ
-        ##### РИСОВАТЬ РАЗНЫМ ЦВЕТОМ
-
         self.alert_buttons = []
-
-        self.draw_alerts(spread_alerts)
-        self.draw_alerts(funding_alerts, b_color='white')
-
-        self.after(10000, self.refresh_alert_window)
+        self.after(100, self.refresh_alert_window)
 
     def refresh_alert_window(self, ):
         if not hasattr(self, 'child_alert_window') or not self.child_alert_window.winfo_exists():
-            return  # Окно закрыто — прекращаем рекурсию
-
+            return
 
         for button in self.alert_buttons:
             button.destroy()
@@ -486,29 +453,13 @@ class Interface(ctk.CTk):
         self.comparer.refresh_all_exchanges_and_prices()
         self.line_dict = self.comparer.prepare_sorted_data_for_interface()
 
-        # spread_alerts = {
-        #     f"{v['first_exchange_name']} to {v['second_exchange_name']} {v['symbol']} spread {v['spread']} fund {v['funding_gain']:.4f}": v
-        #     for k, v in self.line_dict.items()
-        #     if v.get('spread', 0) > consts.SPREAD_FILTER
-        # }
-        #
-        # funding_alerts = {
-        #     f"{v['first_exchange_name']} to {v['second_exchange_name']} {v['symbol']} spread {v['spread']} fund {v['funding_gain']:.4f}": v
-        #     for k, v in self.line_dict.items()
-        #     if v.get('funding_gain', 0) > consts.FUNDING_FILTER
-        # }
-        spread_alerts, funding_alerts = get_spread_alerts_and_funding_alerts(self.line_dict)
-
-        spread_alerts = spread_alerts
-        funding_alerts = funding_alerts
-        # funding_alerts = list(funding_alerts.keys())
-
-
+        spread_alerts, funding_alerts, spot_to_futures_spread_alerts, spot_to_futures_funding_alerts = get_spread_alerts_and_funding_alerts(self.line_dict)
 
         self.draw_alerts(spread_alerts)
         self.draw_alerts(funding_alerts, b_color='white')
+        self.draw_alerts(spot_to_futures_spread_alerts, b_color='pink')
+        self.draw_alerts(spot_to_futures_funding_alerts, b_color='grey')
 
-        # print('done refresh alerts')
         self.after(10000, self.refresh_alert_window)
 
     def draw_alerts(self, list_of_alerts, b_color='yellow'):
