@@ -1,5 +1,5 @@
 # alerts window
-SPREAD_FILTER = 1.03
+SPREAD_FILTER = 1.02
 FUNDING_FILTER = 0.3
 SPOT_TO_FUTURES_SPREAD_FILTER = 1.025
 SPOT_TO_FUTURES_FUNDING_FILTER = 0.1
@@ -35,7 +35,7 @@ EXCHANGES_SITES = {
     'binance': "https://www.binance.com/en/futures/",     # https://www.binance.com/en/futures/HOMEUSDT
     # 'htx':None,
     'kucoin': "https://www.kucoin.com/ru/trade/futures/", # https://www.kucoin.com/ru/trade/futures/BPUSDTM
-    'okx':None,
+    'okx': None,
     'bingx': "https://bingx.com/en/perpetual/",           # https://bingx.com/en/perpetual/HOME-USDT
     'gate': "https://www.gate.com/futures/USDT/",         # https://www.gate.com/futures/USDT/BTC_USDT
     'bitget': "https://www.bitget.com/ru/futures/usdt/",  # https://www.bitget.com/ru/futures/usdt/BTCUSDT

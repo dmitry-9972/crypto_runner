@@ -171,19 +171,6 @@ class Comparer:
 
         intersection = list(set(list1).intersection(set(list2_removed_usdt)))
 
-        # print('list1')
-        # print(list1)
-        # print('list2')
-        # print(list2)
-        # print('list2_removed_usdt')
-        # print(list2_removed_usdt)
-        # print('intersection')
-        # print(intersection)
-        # print(len(intersection))
-
-        # print('len intersection')
-        # print(len(intersection))
-
         for symbol in intersection:
             a = self.all_possible_spot_prices[spot_exchange_name][symbol]
             b = self.all_possible_prices[futures_exchange_name][symbol+':USDT']
@@ -198,7 +185,7 @@ class Comparer:
                 continue
 
             a_funding = 0
-            b_funding = self.all_possible_funding_rates[futures_exchange_name].get(symbol) or 'N\A'
+            b_funding = self.all_possible_funding_rates[futures_exchange_name].get(symbol+':USDT') or 'N\A'
 
             if b_funding is None:
                 b_funding = 'N\A'

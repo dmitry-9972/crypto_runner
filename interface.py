@@ -346,6 +346,9 @@ class Interface(ctk.CTk):
             return  # Окно закрыто — прекращаем рекурсию
 
 
+        print('self.cached_sub_window_line')
+        print(self.cached_sub_window_line)
+
         exchange_client_1 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name1)
         exchange_client_2 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name2)
 
@@ -357,20 +360,26 @@ class Interface(ctk.CTk):
         second_exchange_name = self.cached_sub_window_line['second_exchange_name']
         symbol = self.cached_sub_window_line['symbol']
 
+        spot_symbol = self.cached_sub_window_line['spot_symbol'] if self.cached_sub_window_line.get('spot_futures_comparison') else None
+        futures_symbol = self.cached_sub_window_line['futures_symbol'] if self.cached_sub_window_line.get('spot_futures_comparison') else None
+
+        "переделать спред лос - заточено под ключи"
+
         spread_loss1 = exchange_client_1.get_execution_spread_percent(symbol) or 'N/A'
         spread_loss2 = exchange_client_2.get_execution_spread_percent(symbol) or 'N/A'
         self.execution_spread_losses.configure(text=f'Execution spread losses (divide by 2 for each leg): {spread_loss1}%, {spread_loss2}%')
 
-        try:
+        '''
+        а это всегда спот
+        б это всегда фьюч
+        '''
+
+        if not self.cached_sub_window_line.get('spot_futures_comparison'):                 # F - F
             a = self.comparer.all_possible_prices[first_exchange_name][symbol]
-        except:
-            a = self.comparer.all_possible_spot_prices[first_exchange_name][symbol]
-
-        try:
             b = self.comparer.all_possible_prices[second_exchange_name][symbol]
-        except:
-            b = self.comparer.all_possible_spot_prices[second_exchange_name][symbol]
-
+        else:                                                                              # S - F
+            a = self.comparer.all_possible_spot_prices[first_exchange_name][spot_symbol]
+            b = self.comparer.all_possible_prices[second_exchange_name][futures_symbol]
 
 
         if a is None or b is None:
@@ -382,15 +391,22 @@ class Interface(ctk.CTk):
             print(second_exchange_name)
             return
 
-        a_funding = self.comparer.all_possible_funding_rates[first_exchange_name].get(symbol)
+        if not self.cached_sub_window_line.get('spot_futures_comparison'): # F - F
+            a_funding = self.comparer.all_possible_funding_rates[first_exchange_name].get(symbol)
 
-        if a_funding is None:
-            a_funding = 'N\A'
+            if a_funding is None:
+                a_funding = 'N\A'
 
-        b_funding = self.comparer.all_possible_funding_rates[second_exchange_name].get(symbol) or 'N\A'
+            b_funding = self.comparer.all_possible_funding_rates[second_exchange_name].get(symbol) or 'N\A'
 
-        if b_funding is None:
-            b_funding = 'N\A'
+            if b_funding is None:
+                b_funding = 'N\A'
+        else:
+            a_funding = 0
+            b_funding = self.comparer.all_possible_funding_rates[second_exchange_name].get(symbol+':USDT') or 'N\A'
+
+            if b_funding is None:
+                b_funding = 'N\A'
 
         if 'N\A' in [a_funding, b_funding]:
             funding_gain = -99999
