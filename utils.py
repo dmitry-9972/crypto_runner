@@ -70,6 +70,9 @@ def get_funding_gain(p1: float, p2: float, fr1: float, fr2: float) -> float:
 def get_spread(a , b):
     return round(max(a, b) / min(a, b), 7)
 
+def get_future_to_spot_spread(a , b):
+    return round(b / a, 7)
+
 
 def check_for_ban_strs(line):
     import consts
@@ -109,7 +112,12 @@ def get_prepared_dict_for_all_exchanges(comparer, symbol, exchanges_list ):
     return prepared_dict
 
 
-def get_spread_alerts_and_funding_alerts(line_dict):
+def get_spread_alerts_and_funding_alerts(line_dict, ignored_cache):
+    line_dict = {
+        k: v for k, v in line_dict.items() if not ignored_cache.check(v)
+    }
+
+
     spread_alerts = {
         k: v
         for k, v in sorted(
@@ -151,3 +159,13 @@ def get_spread_alerts_and_funding_alerts(line_dict):
     }
 
     return spread_alerts, funding_alerts, spot_to_futures_spread_alerts, spot_to_futures_funding_alerts
+
+
+def get_funding_rate_interval(raw):
+    interval = raw.get('interval') or \
+               raw.get('fundingInterval') or \
+               raw.get('interval') or \
+               raw.get('funding_interval') or \
+               raw.get('collectCycle')
+    return interval
+

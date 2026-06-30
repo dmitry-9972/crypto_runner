@@ -8,7 +8,7 @@ import threading
 
 from datetime import datetime, timedelta, timezone
 
-from utils import update_symbol_for_specific_exchange_if_needed
+from utils import update_symbol_for_specific_exchange_if_needed, get_funding_rate_interval
 
 
 class ExchangeClient():
@@ -22,6 +22,7 @@ class ExchangeClient():
     current_prices = {}
     funding_rates_dict = None
     current_funding_rates = {}
+    current_funding_intervals = {}
     spot_symbols_dict = {}
     spot_tickers = None
     spot_current_prices = {}
@@ -141,6 +142,7 @@ class ExchangeClient():
         def background_task(is_background=False):
             # print(f" background_task get_funding_rates", is_background)
             prepared_current_funding_rates = {}
+            prepared_current_funding_intervals = {}
             try:
                 prepared_funding_rates = self.exchange.fetch_funding_rates(symbols, )
 
@@ -149,6 +151,16 @@ class ExchangeClient():
                         rate = prepared_funding_rates[symbol].get('fundingRate')
                         prepared_current_funding_rates[symbol] = rate
                         # print(f"{symbol}: {rate} (или {rate * 100:.4f}%)")
+
+                        interval = prepared_current_funding_intervals[symbol] = get_funding_rate_interval(prepared_funding_rates[symbol])
+
+                        if interval == '4h':
+                            prepared_current_funding_rates[symbol] = rate * 2
+                        if interval == '1h':
+                            prepared_current_funding_rates[symbol] = rate * 8
+
+                        # print("interval")
+                        # print(interval)
 
             except Exception as e:
                 for symbol in symbols:
@@ -164,7 +176,18 @@ class ExchangeClient():
                         prepared_current_funding_rates[symbol] = rate
                         # print(f"{symbol}: {rate} (или {float(rate) * 100}%)")
 
+                        interval = prepared_current_funding_intervals[symbol] = get_funding_rate_interval(self.tickers[symbol]['info'])
+
+                        if interval == '4h':
+                            prepared_current_funding_rates[symbol] = rate * 2
+                        if interval == '1h':
+                            prepared_current_funding_rates[symbol] = rate * 8
+                        # print("interval")
+                        # print(interval)
+
+
             self.current_funding_rates = prepared_current_funding_rates
+            self.current_funding_intervals = prepared_current_funding_intervals
             # print(self.current_funding_rates)
             # print(f" background_task get_funding_rates FINISHED")
 

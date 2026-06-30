@@ -3,6 +3,7 @@ import webbrowser
 from decimal import Decimal
 
 import consts
+from ignore_cache import IgnoreCache
 from utils import get_exchange_client_by_exchange_name, get_funding_gain, check_for_ban_strs, get_spread, \
     get_prepared_dict_for_all_exchanges, get_spread_alerts_and_funding_alerts
 
@@ -19,6 +20,8 @@ class Interface(ctk.CTk):
     buttons_list = []
 
     comparer = None
+
+    ignore_cache = IgnoreCache()
 
     def __init__(self, lines_dict, comparer):
         super().__init__()
@@ -216,6 +219,10 @@ class Interface(ctk.CTk):
         url = consts.EXCHANGES_SITES[action] + consts.EXCHANGES_SITES_FORMATTERS[action](symbol)
         webbrowser.open(url)
 
+    def set_to_ignore_alert(self, line):
+        self.ignore_cache.put(line)
+
+
     def open_sub_window(self, choice):
         """Метод для создания и позиционирования нового окна рядом"""
         self.cached_sub_window_choice = choice
@@ -249,6 +256,21 @@ class Interface(ctk.CTk):
         new_y = main_y
 
         self.child_window.geometry(f"+{new_x}+{new_y}")
+
+        btn = ctk.CTkButton(
+            self.child_window,
+            text='IGNORE ALERT',
+            height=45,
+            fg_color='white',
+            hover_color='blue',
+            text_color="black",
+            font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+            anchor="w",
+            corner_radius=8
+        )
+        btn.configure(command=lambda c=self.cached_sub_window_line: self.set_to_ignore_alert(c))
+        btn.pack(pady=5, padx=10, fill="x")
+
 
         self.exchange_name1 = self.cached_sub_window_line['first_exchange_name']  # Индекс 0
         self.exchange_name2 = self.cached_sub_window_line['second_exchange_name']  # Индекс 2
@@ -345,9 +367,6 @@ class Interface(ctk.CTk):
         if not hasattr(self, 'child_window') or not self.child_window.winfo_exists():
             return  # Окно закрыто — прекращаем рекурсию
 
-
-        print('self.cached_sub_window_line')
-        print(self.cached_sub_window_line)
 
         exchange_client_1 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name1)
         exchange_client_2 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name2)
@@ -469,7 +488,11 @@ class Interface(ctk.CTk):
         self.comparer.refresh_all_exchanges_and_prices()
         self.line_dict = self.comparer.prepare_sorted_data_for_interface()
 
-        spread_alerts, funding_alerts, spot_to_futures_spread_alerts, spot_to_futures_funding_alerts = get_spread_alerts_and_funding_alerts(self.line_dict)
+        spread_alerts, \
+        funding_alerts, \
+        spot_to_futures_spread_alerts, \
+        spot_to_futures_funding_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
+                                                                              self.ignore_cache)
 
         self.draw_alerts(spread_alerts)
         self.draw_alerts(funding_alerts, b_color='white')
@@ -479,7 +502,7 @@ class Interface(ctk.CTk):
         self.after(10000, self.refresh_alert_window)
 
     def draw_alerts(self, list_of_alerts, b_color='yellow'):
-        if list_of_alerts and b_color == 'yellow':  # sound only for spreads
+        if list_of_alerts:  # sound only for spreads
             import ctypes
             ctypes.windll.winmm.mciSendStringW("play sounds/Alarm01.wav", None, 0, None)
             # print('SOUND !!!!!!!!!!!!!!!!!  list_of_alerts', list_of_alerts)

@@ -168,8 +168,8 @@ class ChartDrawer:
         plt.show(block=False)
 
 def draw_all_three_charts(exchange_client_1, exchange_client_2, symbol_inner_representation, timeframe='1h', line=None):
-    print("line")
-    print(line)
+    # print("line")
+    # print(line)
 
 
     # эти услови нужны чтоб понять где какой символ качать. спотовый - без :юсдт или фьючерсный с юсдт

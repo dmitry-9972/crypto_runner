@@ -5,7 +5,8 @@ from client import ExchangeClient
 from itertools import combinations
 from decimal import Decimal
 
-from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, check_for_ban_strs
+from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, check_for_ban_strs, \
+    get_future_to_spot_spread
 
 
 class Comparer:
@@ -175,6 +176,9 @@ class Comparer:
             a = self.all_possible_spot_prices[spot_exchange_name][symbol]
             b = self.all_possible_prices[futures_exchange_name][symbol+':USDT']
 
+            if a > b:   # spot should be chipper than future. We cant short spot.
+                continue
+
             if a is None or b is None:
                 print('WRONG SYMBOL, EXCHANGE DOESN"T HAVE SUCH:')
                 print(a)
@@ -200,7 +204,7 @@ class Comparer:
                 funding_gain = Decimal(funding_gain) * 100
 
             key_str = f"{spot_exchange_name.strip():<10} S  to     {futures_exchange_name.strip():<10} F - {symbol.strip():<20}"
-            self.spot_to_futures_comparison_results[key_str] = {'spread': get_spread(a, b),
+            self.spot_to_futures_comparison_results[key_str] = {'spread': get_future_to_spot_spread(a, b),
                                                                 'first_exchange_name': spot_exchange_name.strip(),
                                                                 'second_exchange_name': futures_exchange_name.strip(),
                                                                 'symbol': symbol.strip(),
