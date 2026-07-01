@@ -221,6 +221,12 @@ class Interface(ctk.CTk):
 
     def set_to_ignore_alert(self, line):
         self.ignore_cache.put(line)
+        if hasattr(self, 'child_window') and self.child_window is not None and self.child_window.winfo_exists():
+            self.child_window.destroy()  # Закрываем старое окно
+
+    def set_to_ignore_alert_forever(self, line):
+        self.ignore_cache.ignore_forever(line)
+        self.set_to_ignore_alert(line)
 
 
     def open_sub_window(self, choice):
@@ -269,6 +275,20 @@ class Interface(ctk.CTk):
             corner_radius=8
         )
         btn.configure(command=lambda c=self.cached_sub_window_line: self.set_to_ignore_alert(c))
+        btn.pack(pady=5, padx=10, fill="x")
+
+        btn = ctk.CTkButton(
+            self.child_window,
+            text='IGNORE FOREWER',
+            height=45,
+            fg_color='red',
+            hover_color='black',
+            text_color="black",
+            font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+            anchor="w",
+            corner_radius=8
+        )
+        btn.configure(command=lambda c=self.cached_sub_window_line: self.set_to_ignore_alert_forever(c))
         btn.pack(pady=5, padx=10, fill="x")
 
 

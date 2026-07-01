@@ -1,0 +1,6 @@
+astergateRTX/USDT:USDT
+astergateHIGH/USDT:USDT
+bybitasterHIGH/USDT:USDT
+asterasterALLO/USDTTrueALLO/USDTALLO/USDT:USDTasteraster
+gatebybitSPCX/USDTTrueSPCX/USDTSPCX/USDT:USDTgatebybit
+gategateSPCX/USDTTrueSPCX/USDTSPCX/USDT:USDTgategate

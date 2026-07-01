@@ -228,7 +228,7 @@ class ExchangeClient():
 
 
 
-    def fetch_multiple_ohlcv(self, symbol="BTC/USDT", timeframe='1m', limit=500, days_ago=6, s_to_f=None):
+    def fetch_multiple_ohlcv(self, symbol="BTC/USDT", timeframe='1m', limit=500, days_ago=2, s_to_f=None):
         symbol = update_symbol_for_specific_exchange_if_needed(self.exchange_name,
                                                                symbol,
                                                                s_to_f=s_to_f)
