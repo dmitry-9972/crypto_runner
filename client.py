@@ -209,13 +209,13 @@ class ExchangeClient():
 
     def get_all_spot_symbols(self, ):
         # Получаем список всех доступных символов
-
+        fiat_currencies = {'EUR', 'TRY', 'AED', 'USD', 'RUB', 'GBP', 'UAH'}
         #
         # self.spot_symbols_dict = {symbol: market for symbol, market in self.markets.items() if not ("USDT" in symbol and symbol[-4:] == "USDT")}
-        self.spot_symbols_dict = {symbol: market for symbol, market in self.markets.items() if market['type'] == 'spot' and market['active']}
+        self.spot_symbols_dict = {symbol: market for symbol, market in self.markets.items() if market['type'] == 'spot' and market['active'] and market['quote'] not in fiat_currencies}
         # self.spot_symbols_dict = {symbol: market for symbol, market in self.markets.items() if not(market.get('swap') or market.get('future')) and market['active']}
         # print(self.spot_symbols_dict.keys())
-        # maybe should be refactored for dex
+
 
     def refresh_prices_and_fundings(self):
         self.get_all_futures_symbols()
