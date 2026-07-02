@@ -14,9 +14,9 @@ FILTER_BY_ONLY_TICKER = None
 EXCHANGES = [
  # 'mexc',
     # 'bingx',
-     'bybit',
+      'bybit',
      #'aster',
-    # 'kucoin',
+     # 'kucoin',
      'gate',
     # 'bitget',
     # 'lbank',

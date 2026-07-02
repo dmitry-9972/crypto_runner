@@ -150,8 +150,8 @@ class ChartDrawer:
         # fig.canvas.manager.set_window_title(self.chart_name)
 
         ap = [
-            mpf.make_addplot(df1['close'], color='#2196F3', width=2.5, label='df1 Close'),
-            mpf.make_addplot(df2['close'], color='#FF9800', width=2.5, label='df2 Close')
+            mpf.make_addplot(df1['close'], color='#2196F3', width=0.5, label='df1 Close'),
+            mpf.make_addplot(df2['close'], color='#FF9800', width=0.5, label='df2 Close')
         ]
 
         # Используем любой из df как основу (они одинаковые по индексу)
