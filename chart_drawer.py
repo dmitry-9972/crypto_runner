@@ -174,6 +174,7 @@ def draw_all_three_charts(exchange_client_1, exchange_client_2, symbol_inner_rep
 
     # эти услови нужны чтоб понять где какой символ качать. спотовый - без :юсдт или фьючерсный с юсдт
     s_to_f = None
+    s_to_s = None
 
     if line.get('spot_futures_comparison') and exchange_client_1.exchange_name == line.get('spot_exchange_name'):
         s_to_f = True
@@ -185,10 +186,13 @@ def draw_all_three_charts(exchange_client_1, exchange_client_2, symbol_inner_rep
     if line.get('spot_futures_comparison') and exchange_client_1.exchange_name == exchange_client_2.exchange_name:
         s_to_f = False
 
+    if line.get('spot_spot_comparison'):
+        s_to_s = True
+
     # if line.get('spot_futures_comparison') and exchange_client_1.exchange_name != line.get('futures_exchange_name'):
     #     print('EXCHANGE NAME MISMATCH 1')
 
-    ohlcv1 = exchange_client_1.fetch_multiple_ohlcv(symbol_inner_representation, timeframe, limit=500, s_to_f=s_to_f)
+    ohlcv1 = exchange_client_1.fetch_multiple_ohlcv(symbol_inner_representation, timeframe, limit=500, s_to_f=s_to_f, s_to_s=s_to_s)
 
     if ohlcv1:
         drawer = ChartDrawer(ohlcv1, chart_name=f"{exchange_client_1.exchange_name} {symbol_inner_representation}")
@@ -206,7 +210,7 @@ def draw_all_three_charts(exchange_client_1, exchange_client_2, symbol_inner_rep
     if line.get('spot_futures_comparison') and exchange_client_1.exchange_name == exchange_client_2.exchange_name:
         s_to_f = True
 
-    ohlcv2 = exchange_client_2.fetch_multiple_ohlcv(symbol_inner_representation, timeframe, limit=500, s_to_f=s_to_f)
+    ohlcv2 = exchange_client_2.fetch_multiple_ohlcv(symbol_inner_representation, timeframe, limit=500, s_to_f=s_to_f, s_to_s=s_to_s)
 
     if ohlcv2:
         drawer = ChartDrawer(ohlcv2, chart_name=f"{exchange_client_2.exchange_name} {symbol_inner_representation}")

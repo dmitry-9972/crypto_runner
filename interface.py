@@ -99,7 +99,8 @@ class Interface(ctk.CTk):
                                  'by_funding_gain',
                                  's_to_f_comparison_spread',
                                  's_to_f_comparison_funding_gain',
-                                 's_to_s_comparison_spread']
+                                 's_to_s_comparison_spread',
+                                 'end_of_iterators']
         do_draw_border = False
         for i, line in enumerate(lines_dict.keys()):
             # if check_for_ban_strs(line):
@@ -149,6 +150,9 @@ class Interface(ctk.CTk):
                 color = "purple"
             if 's_to_f_comparison_funding_gain' in line:
                 color = "red"
+
+            if 's_to_s_comparison_spread' in line:
+                color = "green"
 
             line_info = lines_dict[line]
 
@@ -453,8 +457,11 @@ class Interface(ctk.CTk):
         а это всегда спот
         б это всегда фьюч
         '''
+        if self.cached_sub_window_line.get('spot_spot_comparison'):
+            a = self.comparer.all_possible_spot_prices[first_exchange_name][symbol]
+            b = self.comparer.all_possible_spot_prices[second_exchange_name][symbol]
 
-        if not self.cached_sub_window_line.get('spot_futures_comparison'):                 # F - F
+        elif not self.cached_sub_window_line.get('spot_futures_comparison'):                 # F - F
             a = self.comparer.all_possible_prices[first_exchange_name][symbol]
             b = self.comparer.all_possible_prices[second_exchange_name][symbol]
         else:                                                                              # S - F

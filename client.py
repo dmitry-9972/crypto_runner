@@ -228,10 +228,11 @@ class ExchangeClient():
 
 
 
-    def fetch_multiple_ohlcv(self, symbol="BTC/USDT", timeframe='1m', limit=500, days_ago=2, s_to_f=None):
+    def fetch_multiple_ohlcv(self, symbol="BTC/USDT", timeframe='1m', limit=500, days_ago=2, s_to_f=None,s_to_s=None,):
         symbol = update_symbol_for_specific_exchange_if_needed(self.exchange_name,
                                                                symbol,
-                                                               s_to_f=s_to_f)
+                                                               s_to_f=s_to_f,
+                                                               s_to_s=s_to_s,)
 
         # Определяем точку старта (10 дней назад от текущего момента)
         start_date = datetime.now(timezone.utc) - timedelta(days=days_ago)

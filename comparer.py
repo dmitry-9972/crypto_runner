@@ -43,6 +43,7 @@ class Comparer:
 
         self.comparison_results = {}
         self.spot_to_futures_comparison_results = {}
+        self.spot_to_spot_comparison_results = {}
 
         for exchange_client in self.all_exchanges:
             self.refresh_current_exchange(exchange_client)
@@ -220,8 +221,55 @@ class Comparer:
                                                                 'futures_exchange_name': futures_exchange_name.strip(),
                                                                 }
 
+    def compare_spot_to_spot_all_to_all(self, ):
+        self.spot_to_futures_comparison_results = {}
+        pairs = list(combinations(self.exchanges_names, 2))
+        for pair in pairs:
+            ex1, ex2 = pair
+            self.compare_spot_to_spot_by_name(ex1, ex2)
+
+        sorted_data = dict(sorted(self.spot_to_spot_comparison_results.items(), key=lambda item: item[1]['spread'], reverse=True))
+
+        return sorted_data
+
+
+    def compare_spot_to_spot_by_name(self, spot_exchange_name1, spot_exchange_name2):
+        list1 = self.all_possible_spot_prices[spot_exchange_name1].keys()
+        list2 = self.all_possible_spot_prices[spot_exchange_name2].keys()
+
+        intersection = list(set(list1).intersection(set(list2)))
+
+        for symbol in intersection:
+            a = self.all_possible_spot_prices[spot_exchange_name1][symbol]
+            b = self.all_possible_spot_prices[spot_exchange_name2][symbol]
+
+            if a is None or b is None:
+                print('WRONG SYMBOL, EXCHANGE DOESN"T HAVE SUCH:')
+                print(a)
+                print(b)
+                print(symbol)
+                print(spot_exchange_name1)
+                print(spot_exchange_name2)
+                continue
+
+            key_str = f"{spot_exchange_name1.strip():<10} S  to     {spot_exchange_name2.strip():<10} S - {symbol.strip():<20}"
+            self.spot_to_spot_comparison_results[key_str] = {'spread': get_spread(a, b),
+                                                                'first_exchange_name': spot_exchange_name1.strip(),
+                                                                'second_exchange_name': spot_exchange_name2.strip(),
+                                                                'symbol': symbol.strip(),
+                                                                'price1': a,
+                                                                'price2': b,
+                                                                'funding_rate_1': 0,
+                                                                'funding_rate_2': 0,
+                                                                'funding_gain': 0,
+                                                                'spot_futures_comparison': False,
+                                                                'spot_spot_comparison': True,
+                                                                }
+
 
     def prepare_sorted_data_for_interface(self):
+        spot_to_spot_sorted_data_by_spread = self.compare_spot_to_spot_all_to_all()
+
 
         spot_to_futures_sorted_data_by_spread = self.compare_spot_to_futures_all_to_all()
         spot_to_futures_sorted_data_by_funding_gain = self.compare_spot_to_futures_all_to_all(by_spread=False)
@@ -244,15 +292,18 @@ class Comparer:
             else:
                 sorted_data[f"{k} by_spread"] = v
 
-        for k, v in list(sorted_data_by_funding_gain.items())[:100]:
+        for k, v in list(sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} by_funding_gain"] = v
 
 
-        for k, v in list(spot_to_futures_sorted_data_by_spread.items())[:100]:
+        for k, v in list(spot_to_futures_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} s_to_f_comparison_spread"] = v
 
-        for k, v in list(spot_to_futures_sorted_data_by_funding_gain.items())[:100]:
+        for k, v in list(spot_to_futures_sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} s_to_f_comparison_funding_gain"] = v
+
+        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
+            sorted_data[f"{k} s_to_s_comparison_spread"] = v
 
 
         short_dict_for_interface = {}

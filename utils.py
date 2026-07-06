@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import consts
+from ignore_cache import IgnoreCache
 
 
 def get_exchange_client_by_exchange_name(comparer, exchange_name1):
@@ -10,10 +11,10 @@ def get_exchange_client_by_exchange_name(comparer, exchange_name1):
     exchange_client = exchange_client_by_exchange_name[0] if exchange_client_by_exchange_name else None
     return exchange_client
 
-def update_symbol_for_specific_exchange_if_needed(exchange_name=None, symbol=None, s_to_f=None):
+def update_symbol_for_specific_exchange_if_needed(exchange_name=None, symbol=None, s_to_f=None, s_to_s=None):
     symbol_updated = symbol
 
-    if s_to_f:
+    if s_to_f or s_to_s:
         return symbol
 
     if exchange_name in ['lbank',]:
@@ -74,11 +75,19 @@ def get_future_to_spot_spread(a , b):
     return round(b / a, 7)
 
 
-def check_for_ban_strs(line):
+def check_for_ban_strs(line, ignore_cache=None):
     import consts
     for ban_key in consts.BAN_STRS:
         if ban_key in line:
             return True
+    #
+    #
+    # if not ignore_cache:
+    #     ignore_cache = IgnoreCache()
+    #
+    # ignore_cache.check(line)
+    #
+    #
 
 
 def get_prepared_dict_for_all_exchanges(comparer, symbol, exchanges_list ):

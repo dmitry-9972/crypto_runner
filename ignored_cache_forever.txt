@@ -43,3 +43,4 @@ mexcbingxARC/USDTTrueARC/USDTARC/USDT:USDTmexcbingx
 kucoingateNFP/USDT:USDT
 bybitgateWET/USDT:USDT
 bybitgateCAT/USDTTrueCAT/USDTCAT/USDT:USDTbybitgate
+bybitgateU/USDTFalse
