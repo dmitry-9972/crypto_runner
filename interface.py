@@ -94,11 +94,52 @@ class Interface(ctk.CTk):
 
 
     def create_line_buttons(self, lines_dict, ):
+        border_type = None
+        border_type_iterators = ['by_spread',
+                                 'by_funding_gain',
+                                 's_to_f_comparison_spread',
+                                 's_to_f_comparison_funding_gain',
+                                 's_to_s_comparison_spread']
+        do_draw_border = False
         for i, line in enumerate(lines_dict.keys()):
             # if check_for_ban_strs(line):
             #     continue
 
             color = self.colors[i % len(self.colors)] if hasattr(self, 'colors') else "#1f538d"
+
+            # printing the border between type of arbitrage opportunities
+            for border_type_iterator in border_type_iterators:
+                if border_type and border_type in line:
+                    do_draw_border = False
+                    break
+
+                if border_type is None:
+                    border_type = border_type_iterator
+                    do_draw_border = True
+                    border_type_iterators.remove(border_type)
+                    break
+
+                if border_type != border_type_iterator and border_type_iterator in line:
+                    do_draw_border = True
+                    border_type = border_type_iterator
+                    border_type_iterators.remove(border_type)
+                    break
+
+
+            if do_draw_border:
+                btn = ctk.CTkButton(
+                    self.scrollable_frame,
+                    text=border_type,
+                    height=45,
+                    fg_color='white',
+                    hover_color=self.lighten_color(color),
+                    text_color="black",
+                    font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+                    anchor="w",  # текст слева
+                    corner_radius=8
+                )
+                btn.pack(fill="x", pady=6, padx=10)
+
 
             if 'by_spread' in line:
                 color = "#45B7D1"
