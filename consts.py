@@ -1,8 +1,8 @@
 # alerts window
-SPREAD_FILTER = 1.07
-FUNDING_FILTER = 1.5
-SPOT_TO_FUTURES_SPREAD_FILTER = 1.033
-SPOT_TO_FUTURES_FUNDING_FILTER = 1.5
+SPREAD_FILTER = 1.033
+FUNDING_FILTER = 10.5
+SPOT_TO_FUTURES_SPREAD_FILTER = 10.033
+SPOT_TO_FUTURES_FUNDING_FILTER = 10.5
 IGNORE_CACHE_EXPIRE_HOURS = 2
 
 DO_CLEAR_ALL_CACHES = False
@@ -12,11 +12,11 @@ FILTER_BY_ONLY_TICKER = None
 
 
 EXCHANGES = [
- # 'mexc',
-    # 'bingx',
+  # 'mexc',
+  #    'bingx',
       'bybit',
-     #'aster',
-     # 'kucoin',
+     # 'aster',
+     #  'kucoin',
      'gate',
     # 'bitget',
     # 'lbank',
