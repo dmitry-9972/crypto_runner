@@ -5,7 +5,7 @@ from client import ExchangeClient
 from itertools import combinations
 from decimal import Decimal
 
-from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, check_for_ban_strs, \
+from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, \
     get_future_to_spot_spread
 
 
@@ -169,7 +169,7 @@ class Comparer:
     def compare_spot_to_futures_by_name(self, spot_exchange_name, futures_exchange_name):
         list1 = self.all_possible_spot_prices[spot_exchange_name].keys()
         list2 = self.all_possible_prices[futures_exchange_name].keys()
-        list2_removed_usdt = [x.replace(':USDT','') for x in list2]
+        list2_removed_usdt = [x.replace(':USDT', '') for x in list2]
 
         intersection = list(set(list1).intersection(set(list2_removed_usdt)))
 
@@ -314,9 +314,6 @@ class Comparer:
 
         short_dict_for_interface = {}
         for key, value in list(sorted_data.items()):
-            if check_for_ban_strs(key):
-                continue
-            # short_dict_for_interface[f"🔹 {key}:       {value['spread']}"] = value
             short_dict_for_interface[f"🔹 {key}"] = value
 
         return short_dict_for_interface

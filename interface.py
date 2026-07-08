@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import consts
 from ignore_cache import IgnoreCache
-from utils import get_exchange_client_by_exchange_name, get_funding_gain, check_for_ban_strs, get_spread, \
+from utils import get_exchange_client_by_exchange_name, get_funding_gain, get_spread, \
     get_prepared_dict_for_all_exchanges, get_spread_alerts_and_funding_alerts
 
 ctk.set_appearance_mode("dark")  # "dark", "light", "system"
@@ -103,9 +103,6 @@ class Interface(ctk.CTk):
                                  'end_of_iterators']
         do_draw_border = False
         for i, line in enumerate(lines_dict.keys()):
-            # if check_for_ban_strs(line):
-            #     continue
-
             color = self.colors[i % len(self.colors)] if hasattr(self, 'colors') else "#1f538d"
 
             # printing the border between type of arbitrage opportunities

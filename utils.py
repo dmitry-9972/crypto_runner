@@ -75,21 +75,6 @@ def get_future_to_spot_spread(a , b):
     return round(b / a, 7)
 
 
-def check_for_ban_strs(line, ignore_cache=None):
-    import consts
-    for ban_key in consts.BAN_STRS:
-        if ban_key in line:
-            return True
-    #
-    #
-    # if not ignore_cache:
-    #     ignore_cache = IgnoreCache()
-    #
-    # ignore_cache.check(line)
-    #
-    #
-
-
 def get_prepared_dict_for_all_exchanges(comparer, symbol, exchanges_list ):
     prepared_dict = {}
 

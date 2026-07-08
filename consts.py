@@ -3,9 +3,9 @@ SOUND_ON = False
 
 # alerts window
 SPREAD_FILTER = 1.02
-FUNDING_FILTER = 10.5
-SPOT_TO_FUTURES_SPREAD_FILTER = 10.033
-SPOT_TO_FUTURES_FUNDING_FILTER = 10.5
+FUNDING_FILTER = 1.02
+SPOT_TO_FUTURES_SPREAD_FILTER = 1.02
+SPOT_TO_FUTURES_FUNDING_FILTER = 1.02
 SPOT_TO_SPOT_SPREAD_FILTER = 1.01
 
 IGNORE_CACHE_EXPIRE_HOURS = 2
@@ -17,12 +17,12 @@ FILTER_BY_ONLY_TICKER = None
 
 
 EXCHANGES = [
-  # 'mexc',
+   'mexc',
   #    'bingx',
       'bybit',
      # 'aster',
-       'kucoin',
-     'gate',
+     #   'kucoin',
+     # 'gate',
     # 'bitget',
     # 'lbank',
    # #                  # kraken?
@@ -90,46 +90,6 @@ SPOT_EXCHANGES_SITES_FORMATTERS = {
     'lbank': remove_slash_formatter,
 }
 
-
-
-BAN_STRS = [
-    'mexc        to     gate       - HK50/USDT:USDT',
-    'bybit       to     gate       - EDGE/USDT:USDT',
-    'mexc        to     gate       - HK50/USDT:USDT',
-    'kucoin      to     gate       - EDGE/USDT:USDT',
-    'bybit       to     gate       - EDGE/USDT:USDT',
-    'mexc        to     gate       - HK50/USDT:USDT',
-    'kucoin      to     gate       - EDGE/USDT:USDT',
-    'mexc        to     gate       - EDGE/USDT:USDT',
-    'mexc        to     gate       - HK50/USDT:USDT',
-    'binance     to     gate       - EDGE/USDT:USDT',
-    'mexc        to     gate       - HK50/USDT:USDT',
-    'mexc        to     gate       - HK50/USDT:USDT',
-    'gate        to     bitget     - EDGE/USDT:USDT',
-    'gate        to     lbank      - ASTEROID/USDT:USDT',
-    'bybit       to     lbank      - 1000XEC/USDT:USDT',
-    'mexc        to     lbank      - ASTEROID/USDT:USDT',
-    'lbank      - HK50/USDT:USDT',
-    'lbank      - 1000XEC/USDT:USDT',
-    'bitget     - CAT/USDT:USDT',
-    'bitget     - ADI/USDT:USDT',
-    'bitget      to     lbank      - CAT/USDT',
-    'mexc        to     gate       - ALL',
-    'gate       - BP',
-    'gate       - MBOX',
-    'bybit      - MBOX',
-    'BEAM',
-    'EDGE',
-    'MBOX',
-    'GUA',
-    'SIREN',
-    'TQQQX',
-    'ESPORTS',
-    'VANRY',
-    'RAVE',
-
-
-]
 
 
 
