@@ -21,7 +21,7 @@ EXCHANGES = [
   #    'bingx',
       'bybit',
      # 'aster',
-     #  'kucoin',
+       'kucoin',
      'gate',
     # 'bitget',
     # 'lbank',

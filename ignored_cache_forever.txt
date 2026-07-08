@@ -61,3 +61,10 @@ kucoingateKILO/USDTFalseTrue
 kucoingateRVV/USDTFalseTrue
 kucoingateBDX/USDTFalseTrue
 kucoingateBDX/BTCFalseTrue
+kucoinasterEWT/USDTTrueEWT/USDTEWT/USDT:USDTkucoinaster
+bybitasterU/USDTFalseTrue
+asterkucoinUP/USDTFalseTrue
+asterkucoinOPEN/USDTFalseTrue
+astergateOPEN/USDTFalseTrue
+astergateO/USDTFalseTrue
+asterkucoinO/USDTFalseTrue

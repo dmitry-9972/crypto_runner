@@ -588,11 +588,11 @@ class Interface(ctk.CTk):
         if not hasattr(self, 'child_alert_window') or not self.child_alert_window.winfo_exists():
             return
 
-        for button in self.alert_buttons:
-            button.destroy()
-
         self.comparer.refresh_all_exchanges_and_prices()
         self.line_dict = self.comparer.prepare_sorted_data_for_interface()
+
+        for button in self.alert_buttons:
+            button.destroy()
 
         spread_alerts, \
         funding_alerts, \
@@ -621,7 +621,7 @@ class Interface(ctk.CTk):
             self.draw_alert_separator(name='s to s spread', b_color='antique white')
             self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
 
-        self.after(10000, self.refresh_alert_window)
+        self.after(30000, self.refresh_alert_window)
 
     def draw_alerts(self, list_of_alerts, b_color='yellow'):
         if list_of_alerts and consts.SOUND_ON:  # sound only for spreads

@@ -27,6 +27,9 @@ class ExchangeClient():
     spot_tickers = None
     spot_current_prices = {}
 
+    cached_order_books = {}
+    cached_order_books_cooldown = None
+
     def __init__(self, exchange_name=None):
         self.exchange_name = exchange_name
         self.exchange = getattr(ccxt, self.exchange_name)({'enableRateLimit': True})
@@ -113,10 +116,25 @@ class ExchangeClient():
 
 
     def get_execution_spred_from_order_book(self, symbol):
-        orderbook = self.exchange.fetch_order_book(symbol)
-        best_bid = orderbook['bids'][0][0] if orderbook['bids'] else None
-        best_ask = orderbook['asks'][0][0] if orderbook['asks'] else None
-        return best_ask - best_bid
+        def background_task():
+            self.cached_order_books[symbol] = self.exchange.fetch_order_book(symbol)
+
+        if self.cached_order_books_cooldown and time.time() - self.cached_order_books_cooldown < 2:
+            pass
+            # print('REFRESH ORDERBOOK COOLDOWN')
+        else:
+            thread = threading.Thread(
+                target=background_task,)
+            thread.start()
+            self.cached_order_books_cooldown = time.time()
+
+        if self.cached_order_books.get(symbol):
+            orderbook = self.cached_order_books[symbol]
+            best_bid = orderbook['bids'][0][0] if orderbook['bids'] else None
+            best_ask = orderbook['asks'][0][0] if orderbook['asks'] else None
+            if not best_bid or not best_ask:
+                return
+            return best_ask - best_bid
 
     def get_execution_spread(self, symbol, x_to_x_type=None):
         if x_to_x_type == 's_to_s' or x_to_x_type == 's_to_f':
@@ -143,12 +161,18 @@ class ExchangeClient():
     def get_execution_spread_percent(self, symbol, x_to_x_type=None):
         execution_spread = self.get_execution_spread(symbol, x_to_x_type)
 
+        price = None
+
         if execution_spread and not x_to_x_type:
             price = self.tickers[symbol]['last']
         elif execution_spread and x_to_x_type == 's_to_s':
             price = self.spot_tickers[symbol]['last']
         elif execution_spread and x_to_x_type == 's_to_f':
             price = self.spot_tickers[symbol]['last']
+
+        if not price:
+            return
+
         return round(execution_spread/price * 100, 6)
 
 
