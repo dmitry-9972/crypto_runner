@@ -47,6 +47,7 @@ class IgnoreCache:
             f"{line.get('futures_symbol', '')}"
             f"{line.get('spot_exchange_name', '')}"
             f"{line.get('futures_exchange_name', '')}"
+            f"{line.get('spot_spot_comparison', '')}"
         )
 
     def put(self, line: Dict[str, Any]) -> None:

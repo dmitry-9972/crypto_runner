@@ -140,6 +140,7 @@ class Interface(ctk.CTk):
                     corner_radius=8
                 )
                 btn.pack(fill="x", pady=6, padx=10)
+                self.buttons_list.append(btn)
 
 
             if 'by_spread' in line:
@@ -292,7 +293,7 @@ class Interface(ctk.CTk):
 
         self.child_window = ctk.CTkToplevel(self)
         self.child_window.title(f"Опции для: {choice}")
-        self.child_window.geometry("500x500")
+        self.child_window.geometry("500x700")
 
         # Поверх основного окна
         self.child_window.attributes("-topmost", True)
@@ -342,9 +343,6 @@ class Interface(ctk.CTk):
 
         exchange_client_1 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name1)
         exchange_client_2 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name2)
-        # print('888')
-        # print(exchange_client_1)
-        # print(exchange_client_2)
 
         if 'gate' in [self.exchange_name1, self.exchange_name2]:
             gate_warning = ctk.CTkLabel(
@@ -392,8 +390,22 @@ class Interface(ctk.CTk):
 
         self.symbol =self.cached_sub_window_line['symbol']
 
-        spread_loss1 = exchange_client_1.get_execution_spread_percent(self.symbol) or 'N/A'
-        spread_loss2 = exchange_client_2.get_execution_spread_percent(self.symbol) or 'N/A'
+        x_to_x_type = None
+
+        if self.cached_sub_window_line.get('spot_spot_comparison'):
+            x_to_x_type = 's_to_s'
+
+        if self.cached_sub_window_line.get('spot_futures_comparison'):
+            x_to_x_type = 's_to_f'
+
+        spread_loss1 = exchange_client_1.get_execution_spread_percent(self.symbol, x_to_x_type=x_to_x_type) or 'N/A'
+
+
+        if self.cached_sub_window_line.get('spot_futures_comparison'):
+            x_to_x_type = None
+            self.symbol = self.cached_sub_window_line['futures_symbol']
+
+        spread_loss2 = exchange_client_2.get_execution_spread_percent(self.symbol, x_to_x_type=x_to_x_type) or 'N/A'
 
         # print(spread_loss1, spread_loss2)
 
@@ -447,10 +459,23 @@ class Interface(ctk.CTk):
         spot_symbol = self.cached_sub_window_line['spot_symbol'] if self.cached_sub_window_line.get('spot_futures_comparison') else None
         futures_symbol = self.cached_sub_window_line['futures_symbol'] if self.cached_sub_window_line.get('spot_futures_comparison') else None
 
-        "переделать спред лос - заточено под ключи"
+        x_to_x_type = None
 
-        spread_loss1 = exchange_client_1.get_execution_spread_percent(symbol) or 'N/A'
-        spread_loss2 = exchange_client_2.get_execution_spread_percent(symbol) or 'N/A'
+        if self.cached_sub_window_line.get('spot_spot_comparison'):
+            x_to_x_type = 's_to_s'
+
+        if self.cached_sub_window_line.get('spot_futures_comparison'):
+            x_to_x_type = 's_to_f'
+
+
+
+        spread_loss1 = exchange_client_1.get_execution_spread_percent(symbol, x_to_x_type) or 'N/A'
+
+        if self.cached_sub_window_line.get('spot_futures_comparison'):
+            x_to_x_type = None
+            symbol = self.cached_sub_window_line['futures_symbol']
+
+        spread_loss2 = exchange_client_2.get_execution_spread_percent(symbol, x_to_x_type) or 'N/A'
         self.execution_spread_losses.configure(text=f'Execution spread losses (divide by 2 for each leg): {spread_loss1}%, {spread_loss2}%')
 
         '''
@@ -559,18 +584,20 @@ class Interface(ctk.CTk):
         spread_alerts, \
         funding_alerts, \
         spot_to_futures_spread_alerts, \
-        spot_to_futures_funding_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
-                                                                              self.ignore_cache)
+        spot_to_futures_funding_alerts, \
+        spot_to_spot_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
+                                                                   self.ignore_cache)
 
         self.draw_alerts(spread_alerts)
         self.draw_alerts(funding_alerts, b_color='white')
         self.draw_alerts(spot_to_futures_spread_alerts, b_color='pink')
         self.draw_alerts(spot_to_futures_funding_alerts, b_color='grey')
+        self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
 
         self.after(10000, self.refresh_alert_window)
 
     def draw_alerts(self, list_of_alerts, b_color='yellow'):
-        if list_of_alerts:  # sound only for spreads
+        if list_of_alerts and consts.SOUND_ON:  # sound only for spreads
             import ctypes
             ctypes.windll.winmm.mciSendStringW("play sounds/Alarm01.wav", None, 0, None)
             # print('SOUND !!!!!!!!!!!!!!!!!  list_of_alerts', list_of_alerts)

@@ -118,7 +118,19 @@ class ExchangeClient():
         best_ask = orderbook['asks'][0][0] if orderbook['asks'] else None
         return best_ask - best_bid
 
-    def get_execution_spread(self, symbol):
+    def get_execution_spread(self, symbol, x_to_x_type=None):
+        if x_to_x_type == 's_to_s' or x_to_x_type == 's_to_f':
+            if symbol in self.spot_tickers:
+                bid = self.spot_tickers[symbol]['bid']
+                ask = self.spot_tickers[symbol]['ask']
+
+                if not bid or not ask:
+                    return self.get_execution_spred_from_order_book(symbol)
+
+                return ask - bid
+            return
+
+
         if symbol in self.tickers:
             bid = self.tickers[symbol]['bid']
             ask = self.tickers[symbol]['ask']
@@ -128,12 +140,16 @@ class ExchangeClient():
 
             return ask - bid
 
-    def get_execution_spread_percent(self, symbol):
-        execution_spread = self.get_execution_spread(symbol)
+    def get_execution_spread_percent(self, symbol, x_to_x_type=None):
+        execution_spread = self.get_execution_spread(symbol, x_to_x_type)
 
-        if execution_spread:
+        if execution_spread and not x_to_x_type:
             price = self.tickers[symbol]['last']
-            return round(execution_spread/price * 100 , 6)
+        elif execution_spread and x_to_x_type == 's_to_s':
+            price = self.spot_tickers[symbol]['last']
+        elif execution_spread and x_to_x_type == 's_to_f':
+            price = self.spot_tickers[symbol]['last']
+        return round(execution_spread/price * 100, 6)
 
 
     def get_funding_rates(self, symbols):
