@@ -34,7 +34,7 @@ class Interface(ctk.CTk):
         self.exchange_name2 = None
 
         self.title("BEST OPTIONS")
-        self.geometry("1200x700")
+        self.geometry("200x200+0+0")
         self.resizable(True, True)
 
         # Заголовок
@@ -568,7 +568,7 @@ class Interface(ctk.CTk):
     def open_alert_window(self, ):
         self.child_alert_window = ctk.CTkToplevel(self)
         self.child_alert_window.title(f"ALERTS")
-        self.child_alert_window.geometry("600x650")
+        self.child_alert_window.geometry("700x600")
         self.child_alert_window.attributes("-topmost", False)
         main_x = self.winfo_x()
         main_y = self.winfo_y()
