@@ -543,6 +543,9 @@ class Interface(ctk.CTk):
             self.info_spread.configure(text=f'Real spread: {get_spread(a, b):.5f}')
             self.info_funding_gain.configure(text=f'Real funding gain (per each period 1-4-8h): {funding_gain:.5f}%')
 
+            if funding_gain == -99999:
+                self.info_funding_gain.pack_forget()
+
         except Exception as e:
             # На случай ошибки (например, если данные не удалось получить)
             self.info_spread.configure(text=f"Ошибка обновления:\n{str(e)}")
@@ -629,7 +632,14 @@ class Interface(ctk.CTk):
         for text in list_of_alerts.keys():
             # Строка
             v = list_of_alerts[text]
-            prepared_text = f"{v['first_exchange_name']} to {v['second_exchange_name']} {v['symbol']} spread {v['spread']} fund {v['funding_gain']:.4f}"
+            prepared_text = f"{v['first_exchange_name']} to {v['second_exchange_name']} {v['symbol']} spread {v['spread']}"
+
+            if v['funding_gain']:
+                prepared_text += f" fund {v['funding_gain']:.4f}"
+
+            if 'execution_spread_loss_1' in v.keys() and 'execution_spread_loss_2' in v.keys():
+                prepared_text += f" ex.l: {v['execution_spread_loss_1']:.4f}% ex.l:  {v['execution_spread_loss_2']:.4f}%"
+
             # Кнопка
             btn = ctk.CTkButton(
                 self.alert_scrollable_frame,

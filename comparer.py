@@ -239,6 +239,9 @@ class Comparer:
 
         intersection = list(set(list1).intersection(set(list2)))
 
+        exchange_1 = get_exchange_client_by_exchange_name(self, spot_exchange_name1)
+        exchange_2 = get_exchange_client_by_exchange_name(self, spot_exchange_name2)
+
         for symbol in intersection:
             a = self.all_possible_spot_prices[spot_exchange_name1][symbol]
             b = self.all_possible_spot_prices[spot_exchange_name2][symbol]
@@ -254,17 +257,21 @@ class Comparer:
 
             key_str = f"{spot_exchange_name1.strip():<10} S  to     {spot_exchange_name2.strip():<10} S - {symbol.strip():<20}"
             self.spot_to_spot_comparison_results[key_str] = {'spread': get_spread(a, b),
-                                                                'first_exchange_name': spot_exchange_name1.strip(),
-                                                                'second_exchange_name': spot_exchange_name2.strip(),
-                                                                'symbol': symbol.strip(),
-                                                                'price1': a,
-                                                                'price2': b,
-                                                                'funding_rate_1': 0,
-                                                                'funding_rate_2': 0,
-                                                                'funding_gain': 0,
-                                                                'spot_futures_comparison': False,
-                                                                'spot_spot_comparison': True,
-                                                                }
+                                                             'first_exchange_name': spot_exchange_name1.strip(),
+                                                             'second_exchange_name': spot_exchange_name2.strip(),
+                                                             'symbol': symbol.strip(),
+                                                             'price1': a,
+                                                             'price2': b,
+                                                             'funding_rate_1': 0,
+                                                             'funding_rate_2': 0,
+                                                             'funding_gain': 0,
+                                                             'spot_futures_comparison': False,
+                                                             'spot_spot_comparison': True,
+                                                             'execution_spread_loss_1': exchange_1.get_execution_spread_percent(
+                                                                 symbol, x_to_x_type='s_to_s') or 0,
+                                                             'execution_spread_loss_2': exchange_2.get_execution_spread_percent(
+                                                                 symbol, x_to_x_type='s_to_s') or 0,
+                                                             }
 
 
     def prepare_sorted_data_for_interface(self):
@@ -294,7 +301,6 @@ class Comparer:
 
         for k, v in list(sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} by_funding_gain"] = v
-
 
         for k, v in list(spot_to_futures_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} s_to_f_comparison_spread"] = v
