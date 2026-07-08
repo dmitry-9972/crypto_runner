@@ -13,3 +13,7 @@ def remove_slash_formatter(str):
 def dash_formatter(str):
     "BP/USDT" '->' 'BPU-SDTM'
     return str.replace('/', '-')
+
+def idle_formatter(str):
+    "BP/USDT" '->' 'BPU-SDTM'
+    return str

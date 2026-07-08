@@ -47,7 +47,21 @@ EXCHANGES_SITES = {
     'lbank': "https://www.lbank.com/futures/",            # https://www.lbank.com/futures/truthusdt
 }
 
-from site_formatters import remove_slash_and_add_m_formatter, slash_to_underscore_formatter, dash_formatter, remove_slash_formatter
+SPOT_EXCHANGES_SITES = {
+    'mexc': "https://www.mexc.com/futures/",
+    'bybit': "https://www.bybit.com/trade/spot/",              # https://www.bybit.com/en/trade/spot/TRUMP/USDC
+    'binance': "https://www.binance.com/en/futures/",
+    # 'htx':None,
+    'kucoin': "https://www.kucoin.com/ru/trade/futures/",
+    'okx': None,
+    'bingx': "https://bingx.com/en/perpetual/",
+    'gate': "https://www.gate.com/trade/",
+    'bitget': "https://www.bitget.com/ru/futures/usdt/",
+    'lbank': "https://www.lbank.com/futures/",
+}
+
+from site_formatters import remove_slash_and_add_m_formatter, slash_to_underscore_formatter, dash_formatter, \
+    remove_slash_formatter, idle_formatter
 
 EXCHANGES_SITES_FORMATTERS = {
     'mexc': slash_to_underscore_formatter,                                  # https://www.mexc.com/futures/STG_USDT
@@ -61,6 +75,21 @@ EXCHANGES_SITES_FORMATTERS = {
     'bitget': remove_slash_formatter,                                       # https://www.bitget.com/ru/futures/usdt/BTCUSDT
     'lbank': remove_slash_formatter,
 }
+
+
+SPOT_EXCHANGES_SITES_FORMATTERS = {
+    'mexc': slash_to_underscore_formatter,
+    'bybit': idle_formatter,                                        # https://www.bybit.com/trade/usdt/BPUSDT
+    'binance': remove_slash_formatter,
+    # 'htx':None,
+    'kucoin': remove_slash_and_add_m_formatter,
+    # 'okx':None,
+    'bingx': dash_formatter,
+    'gate': slash_to_underscore_formatter,                                  # https://www.gate.com/futures/USDT/BTC_USDT
+    'bitget': remove_slash_formatter,
+    'lbank': remove_slash_formatter,
+}
+
 
 
 BAN_STRS = [

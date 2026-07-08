@@ -261,8 +261,10 @@ class Interface(ctk.CTk):
         """Обработчик нажатия на надпись в новом окне"""
         print(f"Выполняю '{action}' с символом '{symbol}'для элемента '{line}'")
 
-        link_text = "Открыть Google"
-        url = consts.EXCHANGES_SITES[action] + consts.EXCHANGES_SITES_FORMATTERS[action](symbol)
+        if self.cached_sub_window_line.get('spot_spot_comparison'):
+            url = consts.SPOT_EXCHANGES_SITES[action] + consts.SPOT_EXCHANGES_SITES_FORMATTERS[action](symbol)
+        else:
+            url = consts.EXCHANGES_SITES[action] + consts.EXCHANGES_SITES_FORMATTERS[action](symbol)
         webbrowser.open(url)
 
     def set_to_ignore_alert(self, line):
