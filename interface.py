@@ -126,23 +126,6 @@ class Interface(ctk.CTk):
                     border_type_iterators.remove(border_type)
                     break
 
-
-            if do_draw_border:
-                btn = ctk.CTkButton(
-                    self.scrollable_frame,
-                    text=border_type,
-                    height=45,
-                    fg_color='white',
-                    hover_color=self.lighten_color(color),
-                    text_color="black",
-                    font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
-                    anchor="w",  # текст слева
-                    corner_radius=8
-                )
-                btn.pack(fill="x", pady=6, padx=10)
-                self.buttons_list.append(btn)
-
-
             if 'by_spread' in line:
                 color = "#45B7D1"
             if 'by_funding_gain' in line:
@@ -154,6 +137,23 @@ class Interface(ctk.CTk):
 
             if 's_to_s_comparison_spread' in line:
                 color = "green"
+
+
+            if do_draw_border:
+                btn = ctk.CTkButton(
+                    self.scrollable_frame,
+                    text=border_type,
+                    height=45,
+                    fg_color=color,
+                    hover_color=self.lighten_color(color),
+                    text_color="black",
+                    font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+                    anchor="w",  # текст слева
+                    corner_radius=8
+                )
+                btn.pack(fill="x", pady=(20, 5), padx=10)
+                self.buttons_list.append(btn)
+
 
             line_info = lines_dict[line]
 
@@ -588,11 +588,25 @@ class Interface(ctk.CTk):
         spot_to_spot_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
                                                                    self.ignore_cache)
 
-        self.draw_alerts(spread_alerts)
-        self.draw_alerts(funding_alerts, b_color='white')
-        self.draw_alerts(spot_to_futures_spread_alerts, b_color='pink')
-        self.draw_alerts(spot_to_futures_funding_alerts, b_color='grey')
-        self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
+        if spread_alerts:
+            self.draw_alert_separator(name='f to f spread')
+            self.draw_alerts(spread_alerts)
+
+        if funding_alerts:
+            self.draw_alert_separator(name='f to f funding', b_color='white')
+            self.draw_alerts(funding_alerts, b_color='white')
+
+        if spot_to_futures_spread_alerts:
+            self.draw_alert_separator(name='s to f spread', b_color='pink')
+            self.draw_alerts(spot_to_futures_spread_alerts, b_color='pink')
+
+        if spot_to_futures_funding_alerts:
+            self.draw_alert_separator(name='s to f funding', b_color='grey')
+            self.draw_alerts(spot_to_futures_funding_alerts, b_color='grey')
+
+        if spot_to_spot_alerts:
+            self.draw_alert_separator(name='s to s spread', b_color='antique white')
+            self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
 
         self.after(10000, self.refresh_alert_window)
 
@@ -621,6 +635,22 @@ class Interface(ctk.CTk):
             btn.configure(command=lambda c=text: self.on_click(c))
             btn.pack(pady=5, padx=10, fill="x")
             self.alert_buttons.append(btn)
+
+    def draw_alert_separator(self, name, b_color='yellow'):
+        prepared_text = name
+        btn = ctk.CTkButton(
+            self.alert_scrollable_frame,
+            text=prepared_text,
+            height=45,
+            fg_color=b_color,
+            text_color="black",
+            font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+            anchor="w",
+            corner_radius=8
+        )
+        btn.pack(pady=(20, 5), padx=10, fill="x")
+        self.alert_buttons.append(btn)
+
 
 
 
