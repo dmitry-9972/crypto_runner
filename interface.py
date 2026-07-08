@@ -256,15 +256,23 @@ class Interface(ctk.CTk):
 
             return
 
-
-
         """Обработчик нажатия на надпись в новом окне"""
         print(f"Выполняю '{action}' с символом '{symbol}'для элемента '{line}'")
 
+        spot_url = consts.SPOT_EXCHANGES_SITES[action] + consts.SPOT_EXCHANGES_SITES_FORMATTERS[action](symbol)
+        futures_url = consts.EXCHANGES_SITES[action] + consts.EXCHANGES_SITES_FORMATTERS[action](symbol)
+
         if self.cached_sub_window_line.get('spot_spot_comparison'):
-            url = consts.SPOT_EXCHANGES_SITES[action] + consts.SPOT_EXCHANGES_SITES_FORMATTERS[action](symbol)
+            url = spot_url
+
+        elif self.cached_sub_window_line.get('spot_futures_comparison'):
+            if self.exchange_name1 == action:  # we need spot url
+                url = spot_url
+            else:                              # we need spot url
+                url = futures_url
+
         else:
-            url = consts.EXCHANGES_SITES[action] + consts.EXCHANGES_SITES_FORMATTERS[action](symbol)
+            url = futures_url
         webbrowser.open(url)
 
     def set_to_ignore_alert(self, line):
