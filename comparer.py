@@ -299,7 +299,7 @@ class Comparer:
         for k, v in list(spot_to_futures_sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} s_to_f_comparison_funding_gain"] = v
 
-        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
+        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP*4]:
             sorted_data[f"{k} s_to_s_comparison_spread"] = v
 
 

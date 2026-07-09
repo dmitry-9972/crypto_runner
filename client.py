@@ -95,6 +95,14 @@ class ExchangeClient():
                 if symbol in prepared_spot_tickers:
                     price = prepared_spot_tickers[symbol]['last']
                     # print(f"{symbol}: {price}")
+
+                    # bid ask double check
+                    bid = prepared_spot_tickers[symbol]['bid']
+                    ask = prepared_spot_tickers[symbol]['ask']
+                    if not (bid <= price <= ask):
+                        # print('exchange:', self.exchange_name, 'symbol: ', symbol, 'wrong price:', price, 'reald bid ask:', bid, ask)
+                        price = ask + bid / 2
+
                     prepared_spot_current_prices[symbol] = price
 
             self.spot_tickers = prepared_spot_tickers
