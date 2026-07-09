@@ -152,7 +152,7 @@ def get_spread_alerts_and_funding_alerts(line_dict, ignored_cache):
         )
     }
 
-    spot_to_spot_alerts = {
+    spot_to_spot_alerts_unfiltered = {
         k: v
         for k, v in sorted(
             (item for item in line_dict.items() if item[1].get('spread', 0) > consts.SPOT_TO_SPOT_SPREAD_FILTER and
@@ -161,6 +161,16 @@ def get_spread_alerts_and_funding_alerts(line_dict, ignored_cache):
             reverse=True
         )
     }
+
+    spot_to_spot_alerts = {}
+    for k, v in spot_to_spot_alerts_unfiltered.items():
+        # print(k, v)
+        if (v['spread'] - 1) * 100 < v['execution_spread_loss_1']  + v['execution_spread_loss_2']:
+            # print('BAD')
+            pass
+        else:
+            # print('GOOD')
+            spot_to_spot_alerts[k] = v
 
     return spread_alerts, funding_alerts, spot_to_futures_spread_alerts, spot_to_futures_funding_alerts, spot_to_spot_alerts
 

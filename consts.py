@@ -1,3 +1,7 @@
+from site_formatters import remove_slash_and_add_m_formatter, slash_to_underscore_formatter, dash_formatter, \
+    remove_slash_formatter, idle_formatter, remove_slash_and_add_dash_formatter
+
+
 LIMITATION_BY_GROUP = 100
 SOUND_ON = False
 
@@ -17,15 +21,15 @@ FILTER_BY_ONLY_TICKER = None
 
 
 EXCHANGES = [
-   'mexc',
-  #    'bingx',
-      'bybit',
-     # 'aster',
-     #   'kucoin',
-     # 'gate',
+    'mexc',
+    #    'bingx',
+    'bybit',
+    # 'aster',
+    'kucoin',
+    'gate',
     # 'bitget',
-    # 'lbank',
-   # #                  # kraken?
+    #  'lbank',
+    # #                  # kraken?
     # # #                   # 'okx',
     # # #                    # 'htx',
     #  ХТ и COINEX orbit?
@@ -48,11 +52,11 @@ EXCHANGES_SITES = {
 }
 
 SPOT_EXCHANGES_SITES = {
-    'mexc': "https://www.mexc.com/futures/",
+    'mexc': "https://www.mexc.com/exchange/",   # https://www.mexc.com/exchange/DEUS_USDT
     'bybit': "https://www.bybit.com/trade/spot/",              # https://www.bybit.com/en/trade/spot/TRUMP/USDC
     'binance': "https://www.binance.com/en/futures/",
     # 'htx':None,
-    'kucoin': "https://www.kucoin.com/ru/trade/futures/",
+    'kucoin': "https://www.kucoin.com/ru/trade/",  # https://www.kucoin.com/ru/trade/DEUS-USDT
     'okx': None,
     'bingx': "https://bingx.com/en/perpetual/",
     'gate': "https://www.gate.com/trade/",
@@ -60,8 +64,7 @@ SPOT_EXCHANGES_SITES = {
     'lbank': "https://www.lbank.com/futures/",
 }
 
-from site_formatters import remove_slash_and_add_m_formatter, slash_to_underscore_formatter, dash_formatter, \
-    remove_slash_formatter, idle_formatter
+
 
 EXCHANGES_SITES_FORMATTERS = {
     'mexc': slash_to_underscore_formatter,                                  # https://www.mexc.com/futures/STG_USDT
@@ -78,11 +81,11 @@ EXCHANGES_SITES_FORMATTERS = {
 
 
 SPOT_EXCHANGES_SITES_FORMATTERS = {
-    'mexc': slash_to_underscore_formatter,
+    'mexc': slash_to_underscore_formatter,   # https://www.mexc.com/exchange/DEUS_USDT
     'bybit': idle_formatter,                                        # https://www.bybit.com/trade/usdt/BPUSDT
     'binance': remove_slash_formatter,
     # 'htx':None,
-    'kucoin': remove_slash_and_add_m_formatter,
+    'kucoin': remove_slash_and_add_dash_formatter,
     # 'okx':None,
     'bingx': dash_formatter,
     'gate': slash_to_underscore_formatter,                                  # https://www.gate.com/futures/USDT/BTC_USDT

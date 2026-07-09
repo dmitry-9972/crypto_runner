@@ -6,6 +6,11 @@ def remove_slash_and_add_m_formatter(str):
     "BP/USDT" '->' 'BPUSDTM'
     return str.replace('/', '')+'M'
 
+def remove_slash_and_add_dash_formatter(str):
+    "BP/USDT" '->' 'BPUSDTM'
+    return str.replace('/', '-')
+
+
 def remove_slash_formatter(str):
     "BP/USDT" '->' 'BPUSDT'
     return str.replace('/', '')

@@ -287,17 +287,8 @@ class Comparer:
 
         sorted_data = {}
 
-        if consts.FILTER_BY_ONLY_TICKER:
-            x = -1
-        else:
-            x = 100
-
-        for k, v in list(sorted_data_by_spread.items())[:x]:
-            if consts.FILTER_BY_ONLY_TICKER:
-                if consts.FILTER_BY_ONLY_TICKER in k:
-                    sorted_data[f"{k} by_spread"] = v
-            else:
-                sorted_data[f"{k} by_spread"] = v
+        for k, v in list(sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
+            sorted_data[f"{k} by_spread"] = v
 
         for k, v in list(sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} by_funding_gain"] = v
@@ -314,6 +305,9 @@ class Comparer:
 
         short_dict_for_interface = {}
         for key, value in list(sorted_data.items()):
+            if consts.FILTER_BY_ONLY_TICKER and consts.FILTER_BY_ONLY_TICKER not in key:
+                continue
+
             short_dict_for_interface[f"🔹 {key}"] = value
 
         return short_dict_for_interface
