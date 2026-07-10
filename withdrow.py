@@ -3,15 +3,18 @@ import pandas as pd
 
 # Инициализируем биржу
 # Внимание: для получения приватных статусов кошельков некоторым биржам могут потребоваться API-ключи
-exchange = ccxt.gate({
-    'enableRateLimit': True,
-    # 'apiKey': 'YOUR_API_KEY',
-    # 'secret': 'YOUR_SECRET_KEY',
+
+exchange = ccxt.bybit({
+    'options': {
+        'fetchCurrencies': True  # Включаем принудительный сбор валют
+    }
 })
 
 
 def get_all_currencies_status():
     print(f"Подключение к {exchange.id} и загрузка данных о валютах...")
+    report_data = []
+    report_dict = {}
 
     try:
         # Проверяем, поддерживает ли биржа метод fetch_currencies
@@ -31,7 +34,7 @@ def get_all_currencies_status():
         print(f"Успешно загружено монет: {len(currencies)}\n")
 
         # Список для структурирования данных (удобно для вывода или сохранения)
-        report_data = []
+
 
         for code, info in currencies.items():
             # Получаем общие флаги для монеты
@@ -49,29 +52,43 @@ def get_all_currencies_status():
                     net_withdraw = net_info.get('withdraw', 'Unknown')
                     net_active = net_info.get('active', 'Unknown')
 
-                    report_data.append({
-                        'Токен': code,
-                        'Общий статус': global_status,
-                        'Депозит (Общий)': global_deposit,
-                        'Вывод (Общий)': global_withdraw,
-                        'Сеть/Блокчейн': net_code,
-                        'Депозит в сети': net_deposit,
-                        'Вывод в сети': net_withdraw,
-                        'Статус сети': 'Активна' if net_active is True else (
-                            'Отключена' if net_active is False else 'Unknown')
-                    })
+                    data_item = {
+                        'Token': code,
+                        'Global Status': global_status,
+                        'Total Deposit': global_deposit,
+                        'Total Withdraw': global_withdraw,
+                        'Network/Blockchain': net_code,
+                        'Network Deposit': net_deposit,
+                        'Network Withdraw': net_withdraw,
+                        'Network Status': 'Active' if net_active is True else (
+                            'Inactive' if net_active is False else 'Unknown')
+                    }
+
+                    report_data.append(data_item)
+
+                    if report_dict.get(code):
+                        report_dict[code].append(data_item)
+                    else:
+                        report_dict[code] = [data_item,]
             else:
                 # Если биржа не разделяет монету на сети в API
-                report_data.append({
-                    'Токен': code,
-                    'Общий статус': global_status,
-                    'Депозит (Общий)': global_deposit,
-                    'Вывод (Общий)': global_withdraw,
-                    'Сеть/Блокчейн': 'Default / Single',
-                    'Депозит в сети': global_deposit,
-                    'Вывод в сети': global_withdraw,
-                    'Статус сети': global_status
-                })
+                data_item = {
+                    'Token': code,
+                    'Global Status': global_status,
+                    'Total Deposit': global_deposit,
+                    'Total Withdraw': global_withdraw,
+                    'Network/Blockchain': 'Default / Single',
+                    'Network Deposit': global_deposit,
+                    'Network Withdraw': global_withdraw,
+                    'Network Status': global_status
+                }
+
+                report_data.append(data_item)
+
+                if report_dict.get(code):
+                    report_dict[code].append(data_item)
+                else:
+                    report_dict[code] = [data_item, ]
 
         # Превращаем в DataFrame для красивого вывода и анализа
         df = pd.DataFrame(report_data)
@@ -88,6 +105,10 @@ def get_all_currencies_status():
         print(f"Произошла ошибка при работе с API: {e}")
         raise e
 
+    return report_dict
 
 
-get_all_currencies_status()
+
+res = get_all_currencies_status()
+print(res)
+print(len(res.keys()))

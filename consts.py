@@ -3,14 +3,16 @@ from site_formatters import remove_slash_and_add_m_formatter, slash_to_underscor
 
 
 LIMITATION_BY_GROUP = 100
-SOUND_ON = False
+SOUND_ON = True
 
 # alerts window
-SPREAD_FILTER = 1.02
+SPREAD_FILTER = 1.01
 FUNDING_FILTER = 1.02
-SPOT_TO_FUTURES_SPREAD_FILTER = 1.02
+SPOT_TO_FUTURES_SPREAD_FILTER = 1.01
 SPOT_TO_FUTURES_FUNDING_FILTER = 1.02
-SPOT_TO_SPOT_SPREAD_FILTER = 1.01
+SPOT_TO_SPOT_SPREAD_FILTER = 1.0000001
+MARK_PRICE_SPREAD_FILTER = 1.03
+
 
 IGNORE_CACHE_EXPIRE_HOURS = 2
 
@@ -21,10 +23,10 @@ FILTER_BY_ONLY_TICKER = None
 
 
 EXCHANGES = [
-    'mexc',
-    #    'bingx',
-    'bybit',
-    # 'aster',
+     'mexc',
+    # #    'bingx',
+     'bybit',
+    # # 'aster',
     'kucoin',
     'gate',
     # 'bitget',

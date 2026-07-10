@@ -17,6 +17,7 @@ class Comparer:
     all_possible_prices = {}
     all_possible_funding_rates = {}
     all_possible_spot_prices = {}
+    all_possible_mark_prices = {}
     comparison_results = {}
     all_exchanges = []
     all_downloaded_ohlcvs = {}
@@ -44,6 +45,7 @@ class Comparer:
         self.comparison_results = {}
         self.spot_to_futures_comparison_results = {}
         self.spot_to_spot_comparison_results = {}
+        self.mark_price_comparison_results = {}
 
         for exchange_client in self.all_exchanges:
             self.refresh_current_exchange(exchange_client)
@@ -60,6 +62,7 @@ class Comparer:
         self.all_possible_prices[exchange_client.exchange_name] = exchange_client.current_prices
         self.all_possible_funding_rates[exchange_client.exchange_name] = exchange_client.current_funding_rates
         self.all_possible_spot_prices[exchange_client.exchange_name] = exchange_client.spot_current_prices
+        self.all_possible_mark_prices[exchange_client.exchange_name] = exchange_client.mark_current_prices
 
 
     def __init__(self):
@@ -145,6 +148,7 @@ class Comparer:
                                                 'funding_rate_1': a_funding,
                                                 'funding_rate_2': b_funding,
                                                 'funding_gain': funding_gain,
+                                                'futures_futures_comparison': True,
                                                 }
 
     def compare_spot_to_futures_all_to_all(self, by_spread=True):
@@ -274,6 +278,51 @@ class Comparer:
                                                              }
 
 
+    def compare_mark_prices_all_to_all(self, ):
+        self.mark_price_comparison_results = {}
+        for exchange_name in self.exchanges_names:
+            self.compare_mark_prices_by_name(exchange_name)
+
+        sorted_data = dict(sorted(self.mark_price_comparison_results.items(), key=lambda item: item[1]['spread'], reverse=True))
+
+        return sorted_data
+
+    def compare_mark_prices_by_name(self, exchange_name):
+        list1 = self.all_possible_prices[exchange_name].keys()
+        list2 = self.all_possible_mark_prices[exchange_name].keys()
+
+        intersection = list(set(list1).intersection(set(list2)))
+        # print("intersection")
+        # print(intersection)
+
+        for symbol in intersection:
+            a = self.all_possible_prices[exchange_name][symbol]
+            b = self.all_possible_mark_prices[exchange_name][symbol]
+
+            if a is None or b is None:
+                print('WRONG SYMBOL, EXCHANGE DOESN"T HAVE SUCH:')
+                print(a)
+                print(b)
+                print(symbol)
+                print(exchange_name)
+                continue
+
+            key_str = f"MARK PRICE {exchange_name.strip():<10} F  to {exchange_name.strip():<10} S - {symbol.strip():<20}"
+            self.mark_price_comparison_results[key_str] = {'spread': get_spread(a, b),
+                                                           'first_exchange_name': exchange_name.strip(),
+                                                           'second_exchange_name': exchange_name.strip(),
+                                                           'symbol': symbol.strip(),
+                                                           'price1': a,
+                                                           'price2': b,
+                                                           'funding_rate_1': 0,
+                                                           'funding_rate_2': 0,
+                                                           'funding_gain': 0,
+                                                           'mark_price_comparison': True,
+                                                           'spot_futures_comparison': False,
+                                                           'spot_spot_comparison': False,
+                                                           }
+
+
     def prepare_sorted_data_for_interface(self):
         spot_to_spot_sorted_data_by_spread = self.compare_spot_to_spot_all_to_all()
 
@@ -284,6 +333,8 @@ class Comparer:
 
         sorted_data_by_spread = self.compare_all_to_all()
         sorted_data_by_funding_gain = self.compare_all_to_all(by_spread=False)
+
+        mark_price_sorted_data_by_spread = self.compare_mark_prices_all_to_all()
 
         sorted_data = {}
 
@@ -299,8 +350,11 @@ class Comparer:
         for k, v in list(spot_to_futures_sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} s_to_f_comparison_funding_gain"] = v
 
-        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP*4]:
+        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP*2]:
             sorted_data[f"{k} s_to_s_comparison_spread"] = v
+
+        for k, v in list(mark_price_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
+            sorted_data[f"{k} mark_price_comparison_spread"] = v
 
 
         short_dict_for_interface = {}

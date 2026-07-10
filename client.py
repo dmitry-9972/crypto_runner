@@ -26,6 +26,8 @@ class ExchangeClient():
     spot_symbols_dict = {}
     spot_tickers = None
     spot_current_prices = {}
+    mark_tickers = None
+    mark_current_prices = {}
 
     cached_order_books = {}
     cached_order_books_cooldown = None
@@ -63,6 +65,14 @@ class ExchangeClient():
                 if symbol in prepared_tickers:
                     price = prepared_tickers[symbol]['last']
                     # print(f"{symbol}: {price}")
+
+                    # bid ask double check
+                    # bid = prepared_tickers[symbol]['bid']
+                    # ask = prepared_tickers[symbol]['ask']
+                    # if (price and bid and ask) and not (bid <= price <= ask):
+                    #     # print('exchange:', self.exchange_name, 'symbol: ', symbol, 'wrong price:', price, 'reald bid ask:', bid, ask)
+                    #     price = ask + bid / 2
+
                     prepared_current_prices[symbol] = price
 
             self.tickers = prepared_tickers
@@ -97,11 +107,11 @@ class ExchangeClient():
                     # print(f"{symbol}: {price}")
 
                     # bid ask double check
-                    bid = prepared_spot_tickers[symbol]['bid']
-                    ask = prepared_spot_tickers[symbol]['ask']
-                    if not (bid <= price <= ask):
-                        # print('exchange:', self.exchange_name, 'symbol: ', symbol, 'wrong price:', price, 'reald bid ask:', bid, ask)
-                        price = ask + bid / 2
+                    # bid = prepared_spot_tickers[symbol]['bid']
+                    # ask = prepared_spot_tickers[symbol]['ask']
+                    # if (price and bid and ask) and not (bid <= price <= ask):
+                    #     # print('exchange:', self.exchange_name, 'symbol: ', symbol, 'wrong price:', price, 'reald bid ask:', bid, ask)
+                    #     price = ask + bid / 2
 
                     prepared_spot_current_prices[symbol] = price
 
@@ -112,6 +122,52 @@ class ExchangeClient():
 
 
         if self.spot_tickers is None or not self.spot_current_prices:  # if they are none means we are running for the first time.
+                                                                         # So don't use threading.
+                                                                         # We need some data to work with in other parts of the program.
+            background_task()
+        else:  # we can update everything in background
+            thread = threading.Thread(
+                target=background_task, args=(True,)
+            )
+            thread.start()
+
+
+    def get_mark_prices(self, symbols):
+        def background_task(is_background=False):
+            """Этот метод будет работать в отдельном потоке."""
+            # print(f" background_task get_prices", is_background)
+
+            prepared_mark_current_prices = {}
+            prepared_mark_tickers = {}
+
+            try:
+                prepared_mark_tickers = self.exchange.fetch_mark_prices(symbols, )
+
+                for symbol in symbols:
+                    if symbol in prepared_mark_tickers:
+                        price = prepared_mark_tickers[symbol]['last']
+                        prepared_mark_current_prices[symbol] = price
+            except:
+                for k, v in self.tickers.items():
+                    info = v.get('info')
+                    if info:
+                        price = info.get('fairPrice') or info.get('mark_price') or info.get('index_price') or info.get('indexPrice')
+
+                        if not price:
+                            print('NO PRICE')
+                            print(k, v)
+                            print('info')
+                            print(info)
+
+                        mark_price = float(price)
+                        prepared_mark_tickers[k] = mark_price
+                        prepared_mark_current_prices[k] = mark_price
+
+            self.mark_tickers = prepared_mark_tickers
+            self.mark_current_prices = prepared_mark_current_prices
+
+
+        if self.mark_tickers is None or not self.mark_current_prices:  # if they are none means we are running for the first time.
                                                                          # So don't use threading.
                                                                          # We need some data to work with in other parts of the program.
             background_task()
@@ -268,6 +324,7 @@ class ExchangeClient():
     def refresh_prices_and_fundings(self):
         self.get_all_futures_symbols()
         self.get_prices(list(self.futures_symbols_dict.keys()))
+        self.get_mark_prices(list(self.futures_symbols_dict.keys()))
         self.get_funding_rates(list(self.futures_symbols_dict.keys()))
 
 

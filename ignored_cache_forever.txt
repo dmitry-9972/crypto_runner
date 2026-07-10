@@ -99,3 +99,16 @@ bybitgateEDGE/USDTFalseTrue
 kucoingateEDGE/USDTFalseTrue
 mexcgateCAT/USDT:USDT
 mexckucoinUP/USDTFalseTrue
+kucoingateBP/USDT:USDT
+mexcgateBP/USDT:USDT
+mexcbitgetCAT/USDT:USDT
+gatebitgetEDGE/USDT:USDT
+kucoingateOPENAI/USDT:USDT
+kucoingateANTHROPIC/USDT:USDT
+kucoinbitgetANTHROPIC/USDT:USDT
+mexcbitgetANTHROPIC/USDT:USDT
+mexcgateOPENAI/USDT:USDT
+gategateBVIX/USDT:USDT
+gategateVOLX/USDT:USDT
+gategateBVIX/USDT:USDTFalseFalse
+gategateVOLX/USDT:USDTFalseFalse

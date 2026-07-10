@@ -34,7 +34,7 @@ class Interface(ctk.CTk):
         self.exchange_name2 = None
 
         self.title("BEST OPTIONS")
-        self.geometry("200x200+0+0")
+        self.geometry("400x500+0+0")
         self.resizable(True, True)
 
         # Заголовок
@@ -100,6 +100,7 @@ class Interface(ctk.CTk):
                                  's_to_f_comparison_spread',
                                  's_to_f_comparison_funding_gain',
                                  's_to_s_comparison_spread',
+                                 'mark_price_comparison_spread',
                                  'end_of_iterators']
         do_draw_border = False
         for i, line in enumerate(lines_dict.keys()):
@@ -131,10 +132,10 @@ class Interface(ctk.CTk):
                 color = "purple"
             if 's_to_f_comparison_funding_gain' in line:
                 color = "red"
-
             if 's_to_s_comparison_spread' in line:
                 color = "green"
-
+            if 'mark_price_comparison_spread' in line:
+                color = "orange"
 
             if do_draw_border:
                 btn = ctk.CTkButton(
@@ -595,8 +596,9 @@ class Interface(ctk.CTk):
         funding_alerts, \
         spot_to_futures_spread_alerts, \
         spot_to_futures_funding_alerts, \
-        spot_to_spot_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
-                                                                   self.ignore_cache)
+        spot_to_spot_alerts, \
+        mark_price_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
+                                                                 self.ignore_cache)
 
         if spread_alerts:
             self.draw_alert_separator(name='f to f spread')
@@ -618,10 +620,14 @@ class Interface(ctk.CTk):
             self.draw_alert_separator(name='s to s spread', b_color='antique white')
             self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
 
-        self.after(30000, self.refresh_alert_window)
+        if mark_price_alerts:
+            self.draw_alert_separator(name='mark price spread', b_color='orange',)
+            self.draw_alerts(mark_price_alerts, b_color='orange', sound_on=True)
 
-    def draw_alerts(self, list_of_alerts, b_color='yellow'):
-        if list_of_alerts and consts.SOUND_ON:  # sound only for spreads
+        self.after(10000, self.refresh_alert_window)
+
+    def draw_alerts(self, list_of_alerts, b_color='yellow', sound_on=False):
+        if list_of_alerts and consts.SOUND_ON and sound_on:  # sound only for spreads
             import ctypes
             ctypes.windll.winmm.mciSendStringW("play sounds/Alarm01.wav", None, 0, None)
             # print('SOUND !!!!!!!!!!!!!!!!!  list_of_alerts', list_of_alerts)
