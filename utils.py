@@ -211,3 +211,14 @@ def get_ask_from_info(info):
     # 'bid1Price': '0.2814', 'bid1Size': '154.9', 'ask1Price': '0.282', 'ask1Size': '354.8'
     # 'buy': '0.2123', 'bestBidSize': '105.96', 'sell': '0.2139',
     # 'lowest_ask': '0.001324', 'highest_bid': '0.001319',
+
+
+def chunk_iterator(lst, n):
+    """Разбивает список lst на чанки размером n и выдает их по очереди."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+    # # Итерируемся по генератору
+    # for chunk in chunk_iterator(my_list, chunk_size):
+    #     print(chunk)

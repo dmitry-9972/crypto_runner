@@ -25,12 +25,12 @@ FILTER_BY_ONLY_TICKER = None
 
 
 EXCHANGES = [
-      'mexc',
+       'mexc',
     # # #    'bingx',
-    'bybit',
+     'bybit',
     # 'aster',
-     'kucoin',
-     'gate',
+       'kucoin',
+       'gate',
     # 'bitget',
     #  'lbank',
     # #                  # kraken?
@@ -114,3 +114,6 @@ SPOT_WITHDRAW_LINKS = {
     'kucoin': 'https://www.kucoin.com/ru/assets/withdraw/',
     'gate': 'https://www.gate.com/myaccount/funds/withdraw/' ,
 }
+
+
+from gate_sol_contracts import *

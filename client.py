@@ -329,6 +329,8 @@ class ExchangeClient():
         self.spot_symbols_dict = {symbol: market for symbol, market in self.markets.items() if market['type'] == 'spot' and market['active'] and market['quote'] not in fiat_currencies}
         # self.spot_symbols_dict = {symbol: market for symbol, market in self.markets.items() if not(market.get('swap') or market.get('future')) and market['active']}
         # print(self.spot_symbols_dict.keys())
+        print('len spot')
+        print(len(self.spot_symbols_dict.keys()))
 
 
     def refresh_prices_and_fundings(self):
