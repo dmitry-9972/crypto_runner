@@ -112,3 +112,12 @@ gategateBVIX/USDT:USDT
 gategateVOLX/USDT:USDT
 gategateBVIX/USDT:USDTFalseFalse
 gategateVOLX/USDT:USDTFalseFalse
+bybitbybitES/USDT:USDTFalseFalse
+mexckucoinBP/USDT:USDT
+kucoingateGUA/USDT:USDT
+bybitkucoinROAM/USDT:USDT
+mexckucoinGUA/USDT:USDT
+mexckucoinROAM/USDT:USDT
+mexckucoinWOTAMALAILE/USDT:USDT
+gategateEVIX/USDT:USDTFalseFalse
+astergateEDGE/USDT:USDT

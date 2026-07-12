@@ -8,7 +8,8 @@ import threading
 
 from datetime import datetime, timedelta, timezone
 
-from utils import update_symbol_for_specific_exchange_if_needed, get_funding_rate_interval
+from utils import update_symbol_for_specific_exchange_if_needed, get_funding_rate_interval, get_bid_from_info, \
+    get_ask_from_info
 
 
 class ExchangeClient():
@@ -104,14 +105,18 @@ class ExchangeClient():
             for symbol in symbols:
                 if symbol in prepared_spot_tickers:
                     price = prepared_spot_tickers[symbol]['last']
+
+                    info = prepared_spot_tickers[symbol]['info']
+
                     # print(f"{symbol}: {price}")
 
                     # bid ask double check
-                    # bid = prepared_spot_tickers[symbol]['bid']
-                    # ask = prepared_spot_tickers[symbol]['ask']
-                    # if (price and bid and ask) and not (bid <= price <= ask):
-                    #     # print('exchange:', self.exchange_name, 'symbol: ', symbol, 'wrong price:', price, 'reald bid ask:', bid, ask)
-                    #     price = ask + bid / 2
+                    bid = get_bid_from_info(info)
+                    ask = get_ask_from_info(info)
+                    if (price and bid and ask) and not (bid <= price <= ask):
+
+                        #print('exchange:', self.exchange_name, 'symbol: ', symbol, 'wrong price:', price, 'reald bid ask:', bid, ask)
+                        price = (ask + bid) / 2
 
                     prepared_spot_current_prices[symbol] = price
 
@@ -151,13 +156,18 @@ class ExchangeClient():
                 for k, v in self.tickers.items():
                     info = v.get('info')
                     if info:
-                        price = info.get('fairPrice') or info.get('mark_price') or info.get('index_price') or info.get('indexPrice')
+                        price = info.get('index_price') or \
+                                info.get('indexPrice') or \
+                                info.get('fairPrice') or \
+                                info.get('mark_price') or \
+                                info.get('markPrice')
 
                         if not price:
-                            print('NO PRICE')
-                            print(k, v)
-                            print('info')
-                            print(info)
+                            print('NO FAIR MARK PRICE')
+                            # print(k, v)
+                            # print('info')
+                            # print(info)
+                            continue
 
                         mark_price = float(price)
                         prepared_mark_tickers[k] = mark_price

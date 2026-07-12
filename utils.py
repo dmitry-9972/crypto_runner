@@ -165,11 +165,7 @@ def get_spread_alerts_and_funding_alerts(line_dict, ignored_cache):
     spot_to_spot_alerts = {}
     for k, v in spot_to_spot_alerts_unfiltered.items():
         # print(k, v)
-        if (v['spread'] - 1) * 100 < v['execution_spread_loss_1']  + v['execution_spread_loss_2']:
-            # print('BAD')
-            pass
-        else:
-            # print('GOOD')
+        if (v['spread'] - 1) * 100 > v['execution_spread_loss_1']  + v['execution_spread_loss_2'] + consts.SPOT_ARBITRAGE_PROFIT_MIN_PERCENT: # 1% прибыли
             spot_to_spot_alerts[k] = v
 
     mark_price_alerts = {
@@ -193,3 +189,25 @@ def get_funding_rate_interval(raw):
                raw.get('collectCycle')
     return interval
 
+
+
+def get_bid_from_info(info):
+    if not info:
+        return
+
+    return float(info.get('bidPrice') or info.get('bid1Price') or info.get('buy') or info.get('highest_bid') or 0)
+    # ''bidPrice': '0.00002511' 'askPrice': '0.00002527','
+    # 'bid1Price': '0.2814', 'bid1Size': '154.9', 'ask1Price': '0.282', 'ask1Size': '354.8'
+    # 'buy': '0.2123', 'bestBidSize': '105.96', 'sell': '0.2139',
+    # 'lowest_ask': '0.001324', 'highest_bid': '0.001319',
+
+
+def get_ask_from_info(info):
+    if not info:
+        return
+
+    return float(info.get('askPrice') or info.get('ask1Price') or info.get('sell') or info.get('lowest_ask') or 0)
+    # ''bidPrice': '0.00002511' 'askPrice': '0.00002527','
+    # 'bid1Price': '0.2814', 'bid1Size': '154.9', 'ask1Price': '0.282', 'ask1Size': '354.8'
+    # 'buy': '0.2123', 'bestBidSize': '105.96', 'sell': '0.2139',
+    # 'lowest_ask': '0.001324', 'highest_bid': '0.001319',

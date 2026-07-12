@@ -204,6 +204,19 @@ class Interface(ctk.CTk):
         # сюда твой текущий код
         self.open_sub_window(choice)
 
+
+    def open_withdraw_link(self, cached_line):
+        symbol = cached_line['symbol'].split('/')[0]
+        url = consts.SPOT_WITHDRAW_LINKS[cached_line['withdrow_exchange']] + symbol
+        print(url)
+        webbrowser.open(url)
+
+    def open_deposit_link(self, cached_line):
+        symbol = cached_line['symbol'].split('/')[0]
+        url = consts.SPOT_DEPOSIT_LINKS[cached_line['deposit_exchange']] + symbol
+        print(url)
+        webbrowser.open(url)
+
     def refresh_main_window(self):
         self.refresh_btn.configure(text='DONE REFRESH')
 
@@ -446,6 +459,35 @@ class Interface(ctk.CTk):
             info_label_for_exchange.pack(pady=15)
             self.exchange_labels.append(info_label_for_exchange)
 
+        if x_to_x_type == 's_to_s':
+            btn = ctk.CTkButton(
+                self.child_window,
+                text=f'WITHDRAW LINK {self.symbol}',
+                height=45,
+                fg_color='#f97316',
+                hover_color='black',
+                text_color="black",
+                font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+                anchor="w",
+                corner_radius=8
+            )
+            btn.configure(command=lambda c=self.cached_sub_window_line: self.open_withdraw_link(c))
+            btn.pack(pady=5, padx=10, fill="x")
+
+            btn = ctk.CTkButton(
+                self.child_window,
+                text=f'DEPOSIT LINK {self.symbol}',
+                height=45,
+                fg_color='#10b981',
+                hover_color='black',
+                text_color="black",
+                font=ctk.CTkFont(family="Consolas", size=13, weight="bold"),
+                anchor="w",
+                corner_radius=8
+            )
+            btn.configure(command=lambda c=self.cached_sub_window_line: self.open_deposit_link(c))
+            btn.pack(pady=5, padx=10, fill="x")
+
         self.update_sub_window_info(choice)
 
     def update_sub_window_info(self, choice):
@@ -493,6 +535,9 @@ class Interface(ctk.CTk):
         if self.cached_sub_window_line.get('spot_spot_comparison'):
             a = self.comparer.all_possible_spot_prices[first_exchange_name][symbol]
             b = self.comparer.all_possible_spot_prices[second_exchange_name][symbol]
+        elif self.cached_sub_window_line.get('mark_price_comparison'):
+            a = self.comparer.all_possible_prices[first_exchange_name][symbol]
+            b = self.comparer.all_possible_mark_prices[second_exchange_name][symbol]
 
         elif not self.cached_sub_window_line.get('spot_futures_comparison'):                 # F - F
             a = self.comparer.all_possible_prices[first_exchange_name][symbol]
@@ -602,7 +647,12 @@ class Interface(ctk.CTk):
 
         if spread_alerts:
             self.draw_alert_separator(name='f to f spread')
-            self.draw_alerts(spread_alerts)
+            self.draw_alerts(spread_alerts, sound_on=True)
+
+        if mark_price_alerts:
+            self.draw_alert_separator(name='mark price spread', b_color='orange',)
+            self.draw_alerts(mark_price_alerts, b_color='orange', sound_on=True)
+
 
         if funding_alerts:
             self.draw_alert_separator(name='f to f funding', b_color='white')
@@ -620,11 +670,8 @@ class Interface(ctk.CTk):
             self.draw_alert_separator(name='s to s spread', b_color='antique white')
             self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
 
-        if mark_price_alerts:
-            self.draw_alert_separator(name='mark price spread', b_color='orange',)
-            self.draw_alerts(mark_price_alerts, b_color='orange', sound_on=True)
 
-        self.after(10000, self.refresh_alert_window)
+        self.after(30000, self.refresh_alert_window)
 
     def draw_alerts(self, list_of_alerts, b_color='yellow', sound_on=False):
         if list_of_alerts and consts.SOUND_ON and sound_on:  # sound only for spreads

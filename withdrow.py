@@ -1,17 +1,10 @@
 import ccxt
 import pandas as pd
 
-# Инициализируем биржу
-# Внимание: для получения приватных статусов кошельков некоторым биржам могут потребоваться API-ключи
-
-exchange = ccxt.bybit({
-    'options': {
-        'fetchCurrencies': True  # Включаем принудительный сбор валют
-    }
-})
+import consts
 
 
-def get_all_currencies_status():
+def get_all_currencies_status(exchange):
     print(f"Подключение к {exchange.id} и загрузка данных о валютах...")
     report_data = []
     report_dict = {}
@@ -93,8 +86,8 @@ def get_all_currencies_status():
         # Превращаем в DataFrame для красивого вывода и анализа
         df = pd.DataFrame(report_data)
 
-        # Выведем первые 50 строк для демонстрации в консоли
-        print(df.to_string(index=False, max_rows=50))
+        # # Выведем первые 50 строк для демонстрации в консоли
+        # print(df.to_string(index=False, max_rows=50))
 
         # Сохраняем результат в CSV файл, чтобы вы могли открыть его в Excel
         filename = f"{exchange.id}_currencies_status.csv"
@@ -109,6 +102,15 @@ def get_all_currencies_status():
 
 
 
-res = get_all_currencies_status()
-print(res)
-print(len(res.keys()))
+
+# print(res)
+# print(len(res.keys()))
+
+
+for exchange_name in consts.EXCHANGES:
+    exchange = getattr(ccxt, exchange_name)({
+    'options': {
+        'fetchCurrencies': True  # Включаем принудительный сбор валют
+    }
+})
+    res = get_all_currencies_status(exchange)

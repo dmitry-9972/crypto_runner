@@ -259,6 +259,13 @@ class Comparer:
                 print(spot_exchange_name2)
                 continue
 
+            if a > b:
+                withdrow_exchange = spot_exchange_name2
+                deposit_exchange = spot_exchange_name1
+            else:
+                withdrow_exchange = spot_exchange_name1
+                deposit_exchange = spot_exchange_name2
+
             key_str = f"{spot_exchange_name1.strip():<10} S  to     {spot_exchange_name2.strip():<10} S - {symbol.strip():<20}"
             self.spot_to_spot_comparison_results[key_str] = {'spread': get_spread(a, b),
                                                              'first_exchange_name': spot_exchange_name1.strip(),
@@ -275,6 +282,8 @@ class Comparer:
                                                                  symbol, x_to_x_type='s_to_s') or 0,
                                                              'execution_spread_loss_2': exchange_2.get_execution_spread_percent(
                                                                  symbol, x_to_x_type='s_to_s') or 0,
+                                                             'deposit_exchange': deposit_exchange,
+                                                             'withdrow_exchange': withdrow_exchange,
                                                              }
 
 
@@ -363,6 +372,51 @@ class Comparer:
                 continue
 
             short_dict_for_interface[f"🔹 {key}"] = value
+
+        #
+        # import heapq
+        # def get_top_and_bottom_values(data, top_n=20):
+        #     # Собираем все значения с информацией откуда они
+        #     all_values = []
+        #
+        #     for exchange, symbols in data.items():
+        #         for symbol, value_str in symbols.items():
+        #             try:
+        #                 value = float(value_str)
+        #                 all_values.append((value, exchange, symbol))
+        #             except ValueError:
+        #                 continue  # пропускаем некорректные значения
+        #
+        #     if not all_values:
+        #         return [], []
+        #
+        #     # Самые большие 20 (по убыванию)
+        #     largest_20 = heapq.nlargest(top_n, all_values, key=lambda x: x[0])
+        #
+        #     # Самые маленькие 20 (по возрастанию)
+        #     smallest_20 = heapq.nsmallest(top_n, all_values, key=lambda x: x[0])
+        #
+        #     return largest_20, smallest_20
+        #
+        #
+        # largest, smallest = get_top_and_bottom_values(self.all_possible_funding_rates, top_n=20)
+        #
+        # print("=== ТОП 20 САМЫХ БОЛЬШИХ ФАНДИНГОВ ===")
+        # for i, (value, exchange, symbol) in enumerate(largest, 1):
+        #     print(f"{i:2d}. {value:12.8f} | {exchange:8} | {symbol}")
+        #
+        # print("\n=== ТОП 20 САМЫХ МАЛЕНЬКИХ ФАНДИНГОВ ===")
+        # for i, (value, exchange, symbol) in enumerate(smallest, 1):
+        #     print(f"{i:2d}. {value:12.8f} | {exchange:8} | {symbol}")
+        #
+        # print("self.all_possible_funding_rates")
+        # print(self.all_possible_funding_rates['aster']['B3/USDT:USDT'])
+        # print(self.all_possible_funding_rates['bybit']['B3/USDT:USDT'])
+
+
+
+        ########################
+
 
         return short_dict_for_interface
 
