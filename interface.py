@@ -101,6 +101,7 @@ class Interface(ctk.CTk):
                                  's_to_f_comparison_funding_gain',
                                  's_to_s_comparison_spread',
                                  'mark_price_comparison_spread',
+                                 's_to_dex_comparison_spread',
                                  'end_of_iterators']
         do_draw_border = False
         for i, line in enumerate(lines_dict.keys()):
@@ -136,6 +137,8 @@ class Interface(ctk.CTk):
                 color = "green"
             if 'mark_price_comparison_spread' in line:
                 color = "orange"
+            if 's_to_dex_comparison_spread' in line:
+                color = "violet"
 
             if do_draw_border:
                 btn = ctk.CTkButton(
@@ -638,12 +641,17 @@ class Interface(ctk.CTk):
             button.destroy()
 
         spread_alerts, \
-        funding_alerts, \
-        spot_to_futures_spread_alerts, \
-        spot_to_futures_funding_alerts, \
-        spot_to_spot_alerts, \
-        mark_price_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
-                                                                 self.ignore_cache)
+            funding_alerts, \
+            spot_to_futures_spread_alerts, \
+            spot_to_futures_funding_alerts, \
+            spot_to_spot_alerts, \
+            mark_price_alerts, \
+            dex_alerts = get_spread_alerts_and_funding_alerts(self.line_dict,
+                                                              self.ignore_cache)
+
+        if dex_alerts:
+            self.draw_alert_separator(name='s to dex spread', b_color='violet')
+            self.draw_alerts(dex_alerts, b_color='violet')
 
         if spread_alerts:
             self.draw_alert_separator(name='f to f spread')
@@ -669,6 +677,8 @@ class Interface(ctk.CTk):
         if spot_to_spot_alerts:
             self.draw_alert_separator(name='s to s spread', b_color='antique white')
             self.draw_alerts(spot_to_spot_alerts, b_color='antique white')
+
+
 
 
         self.after(30000, self.refresh_alert_window)

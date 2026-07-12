@@ -178,7 +178,23 @@ def get_spread_alerts_and_funding_alerts(line_dict, ignored_cache):
         )
     }
 
-    return spread_alerts, funding_alerts, spot_to_futures_spread_alerts, spot_to_futures_funding_alerts, spot_to_spot_alerts, mark_price_alerts
+    dex_alerts = {
+        k: v
+        for k, v in sorted(
+            (item for item in line_dict.items() if item[1].get('spread', 0) > consts.DEX_PRICE_SPREAD_FILTER and
+             item[1].get('spot_dex_comparison')),
+            key=lambda item: item[1].get('spread', 0),
+            reverse=True
+        )
+    }
+
+    return spread_alerts, \
+        funding_alerts, \
+        spot_to_futures_spread_alerts, \
+        spot_to_futures_funding_alerts, \
+        spot_to_spot_alerts, \
+        mark_price_alerts, \
+        dex_alerts
 
 
 def get_funding_rate_interval(raw):

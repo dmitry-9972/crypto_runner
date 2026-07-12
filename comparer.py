@@ -5,6 +5,7 @@ from client import ExchangeClient
 from itertools import combinations
 from decimal import Decimal
 
+from jupiter_gate_quotes import get_prices_for_gate_from_jupiter
 from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, \
     get_future_to_spot_spread
 
@@ -21,6 +22,8 @@ class Comparer:
     comparison_results = {}
     all_exchanges = []
     all_downloaded_ohlcvs = {}
+
+    all_possible_dex_prices = {}
 
     # def get_ochlv(self, exchange_name, symbol='BTC/USDT', timeframe='15m'):
     #     exchange_client_by_exchange_name = get_exchange_client_by_exchange_name(self, exchange_name)
@@ -46,16 +49,13 @@ class Comparer:
         self.spot_to_futures_comparison_results = {}
         self.spot_to_spot_comparison_results = {}
         self.mark_price_comparison_results = {}
+        self.spot_to_dex_comparison_results = {}
 
         for exchange_client in self.all_exchanges:
             self.refresh_current_exchange(exchange_client)
-            # print('refreshing with', exchange_client.exchange_name)
-            # exchange_client.refresh_prices_and_fundings()
-            # self.all_possible_prices[exchange_client.exchange_name] = exchange_client.current_prices
-            # self.all_possible_funding_rates[exchange_client.exchange_name] = exchange_client.current_funding_rates
 
-            # print('***********')
-            # print(self.all_possible_funding_rates)
+        # sdelat asinhronno
+        self.all_possible_dex_prices = get_prices_for_gate_from_jupiter()
 
     def refresh_current_exchange(self, exchange_client):
         exchange_client.refresh_prices_and_fundings()
@@ -331,6 +331,70 @@ class Comparer:
                                                            'spot_spot_comparison': False,
                                                            }
 
+    def compare_spot_to_dex_all_to_all(self, ):
+        self.spot_to_dex_comparison_results = {}
+        for cex_exchange_name in self.exchanges_names:
+
+            # когда другие дексы появятся - нужно будет тут допилить чтоб декс биржу тоже брало
+
+            self.compare_spot_to_dex_by_name(cex_exchange_name)
+
+        sorted_data = dict(sorted(self.spot_to_dex_comparison_results.items(), key=lambda item: item[1]['spread'], reverse=True))
+
+        return sorted_data
+
+
+    def compare_spot_to_dex_by_name(self, spot_exchange_name):
+        list1 = self.all_possible_spot_prices[spot_exchange_name].keys()
+        list2 = self.all_possible_dex_prices.keys()
+
+        intersection = list(set(list1).intersection(set(list2)))
+        print('dex-cex intersection')
+        print(len(intersection))
+        # print('self.all_possible_dex_prices.keys()')
+        # print(self.all_possible_dex_prices.keys())
+
+        exchange_1 = get_exchange_client_by_exchange_name(self, spot_exchange_name)
+
+        for symbol in intersection:
+            a = self.all_possible_spot_prices[spot_exchange_name][symbol]
+            b = self.all_possible_dex_prices[symbol]
+
+            if a is None or b is None:
+                print('WRONG SYMBOL, EXCHANGE DOESN"T HAVE SUCH:')
+                print(a)
+                print(b)
+                print(symbol)
+                print(spot_exchange_name)
+                print('dex')
+                continue
+
+            if a > b:
+                withdrow_exchange = 'dex'
+                deposit_exchange = spot_exchange_name
+            else:
+                withdrow_exchange = spot_exchange_name
+                deposit_exchange = 'dex'
+
+            key_str = f"{spot_exchange_name.strip():<10} S  to     {'dex':<10} S - {symbol.strip():<20}"
+            self.spot_to_dex_comparison_results[key_str] = {'spread': get_spread(a, b),
+                                                            'first_exchange_name': spot_exchange_name.strip(),
+                                                            'second_exchange_name': 'dex',
+                                                            'symbol': symbol.strip(),
+                                                            'price1': a,
+                                                            'price2': b,
+                                                            'funding_rate_1': 0,
+                                                            'funding_rate_2': 0,
+                                                            'funding_gain': 0,
+                                                            'spot_futures_comparison': False,
+                                                            'spot_spot_comparison': False,
+                                                            'spot_dex_comparison': True,
+                                                            'execution_spread_loss_1': exchange_1.get_execution_spread_percent(
+                                                                symbol, x_to_x_type='s_to_s') or 0,
+                                                            'execution_spread_loss_2': 0,
+                                                            'deposit_exchange': deposit_exchange,
+                                                            'withdrow_exchange': withdrow_exchange,
+                                                            }
 
     def prepare_sorted_data_for_interface(self):
         spot_to_spot_sorted_data_by_spread = self.compare_spot_to_spot_all_to_all()
@@ -344,6 +408,8 @@ class Comparer:
         sorted_data_by_funding_gain = self.compare_all_to_all(by_spread=False)
 
         mark_price_sorted_data_by_spread = self.compare_mark_prices_all_to_all()
+
+        spot_to_dex_sorted_data_by_spread = self.compare_spot_to_dex_all_to_all()
 
         sorted_data = {}
 
@@ -364,6 +430,10 @@ class Comparer:
 
         for k, v in list(mark_price_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} mark_price_comparison_spread"] = v
+
+        for k, v in list(spot_to_dex_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:
+            # print('added', k, v)
+            sorted_data[f"{k} s_to_dex_comparison_spread"] = v
 
 
         short_dict_for_interface = {}

@@ -1,3 +1,4 @@
+import time
 from pprint import pprint
 
 import requests
@@ -49,10 +50,12 @@ def get_prices_for_gate_from_jupiter():
 
     result = {}
     for chunk in chunk_iterator(list(consts.GATE_SOL_CONTRACTS.keys()), 40):
+        time.sleep(1)
         mints = []
 
         for key in chunk:
             mints.append(consts.GATE_SOL_CONTRACTS[key]['contract_address'])
+
 
         response = requests.get(
             'https://api.jup.ag/price/v3',
@@ -62,10 +65,15 @@ def get_prices_for_gate_from_jupiter():
         prices = response.json()
 
         for mint, data in prices.items():
-            print(f"{reverse_dict[mint]}  {mint}: ${data.get('usdPrice') or 0}")
+            # print(f"{reverse_dict[mint]}  {mint}: ${data.get('usdPrice') or 0}")
 
-            if data.get('usdPrice'):
-                result[reverse_dict[mint]] = data.get('usdPrice')
+            if type(data) == dict and data.get('usdPrice'):
+                # на самом деле это цена в долларах а не в юсдт, но я решил не париться
+                # может будет отклонение на 2 тысячных
+                result[reverse_dict[mint]+'/USDT'] = data.get('usdPrice')
+            else:
+                pass
+                # print('something wrong with', data)
 
 
     return result
