@@ -5,6 +5,7 @@ env/
 .idea/
 
 cache_markets_*
-/secret_settings.py
-/gate_currencies_status.csv
-/kucoin_currencies_status.csv
+/settings/secret_settings.py
+/withdraw_info_getter/gate_currencies_status.csv
+/withdraw_info_getter/kucoin_currencies_status.csv
+/settings/secret_settings.py

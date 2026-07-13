@@ -1,7 +1,6 @@
 from decimal import Decimal
 
-import consts
-from ignore_cache import IgnoreCache
+from settings import consts
 
 
 def get_exchange_client_by_exchange_name(comparer, exchange_name1):
@@ -156,7 +155,7 @@ def get_spread_alerts_and_funding_alerts(line_dict, ignored_cache):
         k: v
         for k, v in sorted(
             (item for item in line_dict.items() if item[1].get('spread', 0) > consts.SPOT_TO_SPOT_SPREAD_FILTER and
-            item[1].get('spot_spot_comparison')),
+             item[1].get('spot_spot_comparison')),
             key=lambda item: item[1].get('spread', 0),
             reverse=True
         )

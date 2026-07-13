@@ -1,11 +1,7 @@
 import time
-from pprint import pprint
 
-import requests
-
-import consts
-import secret_settings
-from utils import chunk_iterator
+from settings import secret_settings, consts
+from utils.utils import chunk_iterator
 
 ######################################################### SOLO TOKEN
 

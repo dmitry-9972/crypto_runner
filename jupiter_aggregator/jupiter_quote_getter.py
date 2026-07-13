@@ -1,9 +1,6 @@
 import requests
 
-import consts
-import secret_settings
-from utils import chunk_iterator
-
+from settings import secret_settings, consts
 
 USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
 

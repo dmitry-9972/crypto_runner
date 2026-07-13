@@ -1,7 +1,7 @@
 import ccxt
 import pandas as pd
 
-import consts
+from settings import consts
 
 
 def get_all_currencies_status(exchange):

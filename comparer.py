@@ -1,12 +1,12 @@
 import time
 
-import consts
+from settings import consts
 from client import ExchangeClient
 from itertools import combinations
 from decimal import Decimal
 
 from jupiter_aggregator.jupiter_gate_quotes import get_prices_for_gate_from_jupiter
-from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, \
+from utils.utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, \
     get_future_to_spot_spread
 
 
@@ -425,7 +425,7 @@ class Comparer:
         for k, v in list(spot_to_futures_sorted_data_by_funding_gain.items())[:consts.LIMITATION_BY_GROUP]:
             sorted_data[f"{k} s_to_f_comparison_funding_gain"] = v
 
-        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP*2]:
+        for k, v in list(spot_to_spot_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP * 2]:
             sorted_data[f"{k} s_to_s_comparison_spread"] = v
 
         for k, v in list(mark_price_sorted_data_by_spread.items())[:consts.LIMITATION_BY_GROUP]:

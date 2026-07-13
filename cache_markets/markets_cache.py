@@ -4,11 +4,11 @@ import json
 import os
 import ccxt
 
-import consts
+from settings import consts
 
 # Константы настроек
 CACHE_PREFIX = "cache_markets"
-CACHE_DIR = "cache_markets/"  # Папка для сохранения (текущая)
+CACHE_DIR = "/"  # Папка для сохранения (текущая)
 CACHE_LIFETIME_HOURS = 1
 
 

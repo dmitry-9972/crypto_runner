@@ -1,4 +1,4 @@
-from site_formatters import remove_slash_and_add_m_formatter, slash_to_underscore_formatter, dash_formatter, \
+from utils.site_formatters import remove_slash_and_add_m_formatter, slash_to_underscore_formatter, dash_formatter, \
     remove_slash_formatter, idle_formatter, remove_slash_and_add_dash_formatter
 
 
@@ -117,4 +117,4 @@ SPOT_WITHDRAW_LINKS = {
 }
 
 
-from gate_sol_contracts import *
+from settings.gate_sol_contracts import *

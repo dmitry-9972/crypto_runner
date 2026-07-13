@@ -2,9 +2,9 @@ import customtkinter as ctk
 import webbrowser
 from decimal import Decimal
 
-import consts
-from ignore_cache import IgnoreCache
-from utils import get_exchange_client_by_exchange_name, get_funding_gain, get_spread, \
+from settings import consts
+from utils.ignore_cache import IgnoreCache
+from utils.utils import get_exchange_client_by_exchange_name, get_funding_gain, get_spread, \
     get_prepared_dict_for_all_exchanges, get_spread_alerts_and_funding_alerts
 
 ctk.set_appearance_mode("dark")  # "dark", "light", "system"

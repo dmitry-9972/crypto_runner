@@ -1,14 +1,14 @@
 import ccxt
 import time
 
-import consts
-from markets_cache import get_markets_with_cache
+from settings import consts
+from cache_markets.markets_cache import get_markets_with_cache
 import threading
 
 
 from datetime import datetime, timedelta, timezone
 
-from utils import update_symbol_for_specific_exchange_if_needed, get_funding_rate_interval, get_bid_from_info, \
+from utils.utils import update_symbol_for_specific_exchange_if_needed, get_funding_rate_interval, get_bid_from_info, \
     get_ask_from_info
 
 

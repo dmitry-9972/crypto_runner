@@ -1,10 +1,6 @@
-import ccxt
 import logging
 import pandas as pd
 import mplfinance as mpf
-import matplotlib.pyplot as plt
-
-from utils import update_symbol_for_specific_exchange_if_needed
 
 import matplotlib.pyplot as plt
 
@@ -118,7 +114,6 @@ class ChartDrawer:
 
         # spread_df = df1[['date']].copy()  # берём дату из первого
 
-        import numpy as np
         # for col in ['open', 'high', 'low', 'close', 'volume']:
         #     spread_df[col] = df1[col] / df2[col]
         #     spread_df[col] = spread_df[col].replace([np.inf, -np.inf], np.nan)

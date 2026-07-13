@@ -2,13 +2,13 @@ import datetime
 from typing import Dict, Any, List, Tuple
 import os
 
-import consts
+from settings import consts
 
 
 class IgnoreCache:
     """Класс для кэширования строк игнорирования с временем жизни 1 час"""
 
-    FOREVER_IGNORE_FILE = "ignored_cache_forever.txt"
+    FOREVER_IGNORE_FILE = "../settings/ignored_cache_forever.txt"
 
     def __init__(self):
         self.ignored_lines_cache_list: List[str] = []
