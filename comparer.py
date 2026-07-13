@@ -5,7 +5,7 @@ from client import ExchangeClient
 from itertools import combinations
 from decimal import Decimal
 
-from jupiter_gate_quotes import get_prices_for_gate_from_jupiter
+from jupiter_aggregator.jupiter_gate_quotes import get_prices_for_gate_from_jupiter
 from utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, \
     get_future_to_spot_spread
 
