@@ -1,8 +1,3 @@
-def to_atomic(amount: float, decimals: int) -> int:
-    return int(amount * 10**decimals)
-
-def from_atomic(amount: int, decimals: int) -> float:
-    return amount / 10**decimals
 
 # from solders.pubkey import Pubkey
 # from spl.token.client import Token

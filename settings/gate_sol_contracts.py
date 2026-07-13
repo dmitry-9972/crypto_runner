@@ -1275,6 +1275,7 @@ GATE_SOL_CONTRACTS = {'2Z': {'chain_name': 'SOL',
          'currency': 'ZEX',
          'decimals': 6,
          'deposit_disabled': False,
-         'withdraw_disabled': False}}
+         'withdraw_disabled': False}
+}
 
 

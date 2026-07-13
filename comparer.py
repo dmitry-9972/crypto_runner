@@ -1,3 +1,4 @@
+import threading
 import time
 
 from settings import consts
@@ -5,7 +6,7 @@ from client import ExchangeClient
 from itertools import combinations
 from decimal import Decimal
 
-from jupiter_aggregator.jupiter_gate_quotes import get_prices_for_gate_from_jupiter
+from jupiter_aggregator.jupiter_quote_getter import get_prices_for_gate_from_jupiter
 from utils.utils import get_exchange_client_by_exchange_name, get_spread, get_funding_gain, \
     get_future_to_spot_spread
 
@@ -24,6 +25,7 @@ class Comparer:
     all_downloaded_ohlcvs = {}
 
     all_possible_dex_prices = {}
+    dex_jupiter_processing_started = False
 
     # def get_ochlv(self, exchange_name, symbol='BTC/USDT', timeframe='15m'):
     #     exchange_client_by_exchange_name = get_exchange_client_by_exchange_name(self, exchange_name)
@@ -55,7 +57,25 @@ class Comparer:
             self.refresh_current_exchange(exchange_client)
 
         # sdelat asinhronno
-        self.all_possible_dex_prices = get_prices_for_gate_from_jupiter()
+        self.refresh_jupiter_exchange()
+
+    def refresh_jupiter_exchange(self):
+        def background_task():
+            self.dex_jupiter_processing_started = True
+            self.all_possible_dex_prices = get_prices_for_gate_from_jupiter()
+            self.dex_jupiter_processing_started = False
+
+        # нужна проверка перед стартом вдруг уже поток есть такой
+        if not self.dex_jupiter_processing_started:
+            thread = threading.Thread(
+                target=background_task,
+            )
+            thread.start()
+
+        print("self.all_possible_dex_prices")
+        print(self.all_possible_dex_prices)
+
+
 
     def refresh_current_exchange(self, exchange_client):
         exchange_client.refresh_prices_and_fundings()
@@ -358,7 +378,30 @@ class Comparer:
 
         for symbol in intersection:
             a = self.all_possible_spot_prices[spot_exchange_name][symbol]
-            b = self.all_possible_dex_prices[symbol]
+
+            suitable = False
+
+            if not self.all_possible_dex_prices[symbol].get('sell_price') or\
+                    not self.all_possible_dex_prices[symbol].get('buy_price'):
+                print('NOT ALL PRICES AVAILABLE: ', self.all_possible_dex_prices[symbol])
+                continue
+
+            if self.all_possible_dex_prices[symbol]['sell_price'] > a:
+                # we can buy on cex and sell on dex
+                b = self.all_possible_dex_prices[symbol]['sell_price']
+                suitable = True
+            if self.all_possible_dex_prices[symbol]['buy_price'] < a:
+                # we can buy on dex and sell on cex
+                suitable = True
+                b = self.all_possible_dex_prices[symbol]['sell_price']
+
+            if not suitable:
+                print(f'NOT SUITABLE {symbol}',
+                      'cex:', a,
+                      'dex:',
+                      self.all_possible_dex_prices[symbol]['sell_price'],
+                      self.all_possible_dex_prices[symbol]['buy_price'])
+                continue
 
             if a is None or b is None:
                 print('WRONG SYMBOL, EXCHANGE DOESN"T HAVE SUCH:')
