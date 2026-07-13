@@ -8,7 +8,7 @@ import consts
 
 # Константы настроек
 CACHE_PREFIX = "cache_markets"
-CACHE_DIR = "."  # Папка для сохранения (текущая)
+CACHE_DIR = "cache_markets/"  # Папка для сохранения (текущая)
 CACHE_LIFETIME_HOURS = 1
 
 

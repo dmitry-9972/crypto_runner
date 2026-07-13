@@ -121,3 +121,5 @@ mexckucoinROAM/USDT:USDT
 mexckucoinWOTAMALAILE/USDT:USDT
 gategateEVIX/USDT:USDTFalseFalse
 astergateEDGE/USDT:USDT
+mexcdexTROLL/USDTFalseFalse
+mexcdexARC/USDTFalseFalse
