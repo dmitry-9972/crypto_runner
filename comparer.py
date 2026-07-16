@@ -78,6 +78,9 @@ class Comparer:
 
 
     def refresh_current_exchange(self, exchange_client):
+        if not exchange_client:
+            return
+
         exchange_client.refresh_prices_and_fundings()
         self.all_possible_prices[exchange_client.exchange_name] = exchange_client.current_prices
         self.all_possible_funding_rates[exchange_client.exchange_name] = exchange_client.current_funding_rates
@@ -118,6 +121,7 @@ class Comparer:
         # print(len(intersection))
 
         for symbol in intersection:
+
             a = self.all_possible_prices[first_exchange_name][symbol]
             b = self.all_possible_prices[second_exchange_name][symbol]
 
@@ -419,7 +423,7 @@ class Comparer:
                 withdrow_exchange = spot_exchange_name
                 deposit_exchange = 'dex'
 
-            key_str = f"{spot_exchange_name.strip():<10} S  to     {'dex':<10} S - {symbol.strip():<20}"
+            key_str = f"{spot_exchange_name.strip():<10} S  to  DEX - {symbol.strip():<20}"
             self.spot_to_dex_comparison_results[key_str] = {'spread': get_spread(a, b),
                                                             'first_exchange_name': spot_exchange_name.strip(),
                                                             'second_exchange_name': 'dex',

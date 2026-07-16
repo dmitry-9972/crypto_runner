@@ -209,14 +209,33 @@ class Interface(ctk.CTk):
 
 
     def open_withdraw_link(self, cached_line):
+        # https://jup.ag/?sell=CN162nCPpq3DxPCyKLbAvEJeB1aCxsnVTEG4ZU8vpump&buy=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB&inAmount=500000000
+        # добавить к ссылкам точный обьем чтоб сразу видеть курс обмена
+        # usdt_decimals = consts.GATE_SOL_CONTRACTS['USDT']['decimals']
+        # usdt_in_amount = to_atomic(usdt_amount, usdt_decimals)
+        # mint_decimals = consts.GATE_SOL_CONTRACTS[key]['decimals']
+        # mint_in_real_amount = usdt_amount / buy_price
+        # mint_atomic_amount = to_atomic(mint_in_real_amount, mint_decimals)
+
         symbol = cached_line['symbol'].split('/')[0]
-        url = consts.SPOT_WITHDRAW_LINKS[cached_line['withdrow_exchange']] + symbol
+        mint = consts.GATE_SOL_CONTRACTS[symbol]['contract_address']
+
+        if cached_line['withdrow_exchange'] == 'dex':
+            url = f'https://jup.ag/?sell=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB&buy={mint}'
+        else:
+            url = consts.SPOT_WITHDRAW_LINKS[cached_line['withdrow_exchange']] + symbol
         print(url)
         webbrowser.open(url)
 
     def open_deposit_link(self, cached_line):
         symbol = cached_line['symbol'].split('/')[0]
-        url = consts.SPOT_DEPOSIT_LINKS[cached_line['deposit_exchange']] + symbol
+
+        mint = consts.GATE_SOL_CONTRACTS[symbol]['contract_address']
+
+        if cached_line['deposit_exchange'] == 'dex':
+            url = f'https://jup.ag/?sell=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB&buy={mint}'
+        else:
+            url = consts.SPOT_DEPOSIT_LINKS[cached_line['deposit_exchange']] + symbol
         print(url)
         webbrowser.open(url)
 
@@ -284,7 +303,8 @@ class Interface(ctk.CTk):
                 url = spot_url
             else:                              # we need spot url
                 url = futures_url
-
+        elif self.cached_sub_window_line.get('spot_dex_comparison'):
+            url = spot_url
         else:
             url = futures_url
         webbrowser.open(url)
@@ -317,7 +337,7 @@ class Interface(ctk.CTk):
 
         self.child_window = ctk.CTkToplevel(self)
         self.child_window.title(f"Опции для: {choice}")
-        self.child_window.geometry("500x700")
+        self.child_window.geometry("500x800")
 
         # Поверх основного окна
         self.child_window.attributes("-topmost", True)
@@ -429,7 +449,13 @@ class Interface(ctk.CTk):
             x_to_x_type = None
             self.symbol = self.cached_sub_window_line['futures_symbol']
 
-        spread_loss2 = exchange_client_2.get_execution_spread_percent(self.symbol, x_to_x_type=x_to_x_type) or 'N/A'
+        if self.cached_sub_window_line.get('spot_dex_comparison'):
+            x_to_x_type = 'dex'
+
+        try:
+            spread_loss2 = exchange_client_2.get_execution_spread_percent(self.symbol, x_to_x_type=x_to_x_type) or 'N/A'
+        except:
+            spread_loss2 = 0
 
         # print(spread_loss1, spread_loss2)
 
@@ -446,23 +472,27 @@ class Interface(ctk.CTk):
         # MAX DELTA SEARCH
         exchange_client_1 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name1)
         exchange_client_2 = get_exchange_client_by_exchange_name(self.comparer, self.exchange_name2)
-        prepared_dict = get_prepared_dict_for_all_exchanges(self.comparer, self.symbol, [exchange_client_1, exchange_client_2])
 
-        self.exchange_labels = []
-        for k, v in prepared_dict.items():
-            current_price = v["current_price"]
-            average = v["average"]
-            delta = v["delta"]
+        try:
+            self.exchange_labels = []
+            prepared_dict = get_prepared_dict_for_all_exchanges(self.comparer, self.symbol, [exchange_client_1, exchange_client_2])
 
-            info_label_for_exchange = ctk.CTkLabel(
-                self.child_window,
-                text=f'Exchange {k:<10}: price: {current_price:>10} average: {average:>10} delta: {delta:>10}',
-                font=ctk.CTkFont(size=14, underline=False),  # Подчеркивание для имитации ссылки
-            )
-            info_label_for_exchange.pack(pady=15)
-            self.exchange_labels.append(info_label_for_exchange)
+            for k, v in prepared_dict.items():
+                current_price = v["current_price"]
+                average = v["average"]
+                delta = v["delta"]
 
-        if x_to_x_type == 's_to_s':
+                info_label_for_exchange = ctk.CTkLabel(
+                    self.child_window,
+                    text=f'Exchange {k:<10}: price: {current_price:>10} average: {average:>10} delta: {delta:>10}',
+                    font=ctk.CTkFont(size=14, underline=False),  # Подчеркивание для имитации ссылки
+                )
+                info_label_for_exchange.pack(pady=15)
+                self.exchange_labels.append(info_label_for_exchange)
+        except:
+            pass
+
+        if x_to_x_type in ['s_to_s', 'dex']:
             btn = ctk.CTkButton(
                 self.child_window,
                 text=f'WITHDRAW LINK {self.symbol}',
@@ -528,7 +558,11 @@ class Interface(ctk.CTk):
             x_to_x_type = None
             symbol = self.cached_sub_window_line['futures_symbol']
 
-        spread_loss2 = exchange_client_2.get_execution_spread_percent(symbol, x_to_x_type) or 'N/A'
+        try:
+            spread_loss2 = exchange_client_2.get_execution_spread_percent(symbol, x_to_x_type) or 'N/A'
+        except:
+            spread_loss2 = 0
+
         self.execution_spread_losses.configure(text=f'Execution spread losses (divide by 2 for each leg): {spread_loss1}%, {spread_loss2}%')
 
         '''
@@ -541,6 +575,9 @@ class Interface(ctk.CTk):
         elif self.cached_sub_window_line.get('mark_price_comparison'):
             a = self.comparer.all_possible_prices[first_exchange_name][symbol]
             b = self.comparer.all_possible_mark_prices[second_exchange_name][symbol]
+        elif self.cached_sub_window_line.get('spot_dex_comparison'):
+            a = self.comparer.all_possible_spot_prices[first_exchange_name][symbol]
+            b = 0
 
         elif not self.cached_sub_window_line.get('spot_futures_comparison'):                 # F - F
             a = self.comparer.all_possible_prices[first_exchange_name][symbol]
@@ -559,7 +596,10 @@ class Interface(ctk.CTk):
             print(second_exchange_name)
             return
 
-        if not self.cached_sub_window_line.get('spot_futures_comparison'): # F - F
+        if self.cached_sub_window_line.get('spot_dex_comparison'):
+            a_funding = 0
+            b_funding = 0
+        elif not self.cached_sub_window_line.get('spot_futures_comparison'): # F - F
             a_funding = self.comparer.all_possible_funding_rates[first_exchange_name].get(symbol)
 
             if a_funding is None:

@@ -318,7 +318,9 @@ class ExchangeClient():
     def get_all_futures_symbols(self, ):
         # Получаем список всех доступных futures
         self.futures_symbols_dict = {symbol: market for symbol, market in self.markets.items() if (market.get('swap') or market.get('future')) and "USDT" in symbol and symbol[-4:] == "USDT"}
-
+        # print('ex:', self.exchange_name)
+        # print('self.futures_symbols_dict.keys()')
+        # print(self.futures_symbols_dict.keys())
         # maybe should be refactored for dex
 
     def get_all_spot_symbols(self, ):
@@ -345,7 +347,7 @@ class ExchangeClient():
 
 
 
-    def fetch_multiple_ohlcv(self, symbol="BTC/USDT", timeframe='1m', limit=500, days_ago=2, s_to_f=None,s_to_s=None,):
+    def fetch_multiple_ohlcv(self, symbol="BTC/USDT", timeframe='1m', limit=500, days_ago=6, s_to_f=None,s_to_s=None,):
         symbol = update_symbol_for_specific_exchange_if_needed(self.exchange_name,
                                                                symbol,
                                                                s_to_f=s_to_f,
